@@ -4,4 +4,5 @@
 - [springboot-web](https://github.com/rstyro/spring-boot/tree/master/springboot-web)     *web 版本的*
 - [springboot-log](https://github.com/rstyro/spring-boot/tree/master/springboot-log)     *是给项目添加log 管理*
 - [springboot-mybatis-config](https://github.com/rstyro/spring-boot/tree/master/springboot-mybatis-config)    *这个是mybatis 的配置版*
-- [springboot-mybatis-annotation](https://github.com/rstyro/spring-boot/tree/master/springboot-mybatis-annotation)    *这是mybatis 的注解版*
+- [springboot-mybatis-annotation](https://github.com/rstyro/spring-boot/tree/master/springboot-mybatis-annotation)    *这是mybatis 的注解版*
+- [springboot-mail](https://github.com/rstyro/spring-boot/tree/master/springboot-mail) *这是springboot 发邮件*
