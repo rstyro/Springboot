@@ -1,4 +1,4 @@
 *.js linguist-language=Java  
 *.css linguist-language=Java  
 *.html linguist-language=Java
-*.sh linguist-language=Java
+*.cmd linguist-language=Java
