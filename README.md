@@ -7,3 +7,4 @@
 - [springboot-mybatis-annotation](https://github.com/rstyro/spring-boot/tree/master/springboot-mybatis-annotation)    *这是mybatis 的注解版*
 - [springboot-mail](https://github.com/rstyro/spring-boot/tree/master/springboot-mail) *这是springboot 发邮件*
 - [springboot-redis](https://github.com/rstyro/spring-boot/tree/master/springboot-redis) *springboot 之使用redis数据库*
+- [springboot-editor.md](https://github.com/rstyro/spring-boot/tree/master/springboot-editor.md) *springboot 与editor.md 整合*
