@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>首页</title>
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/editormd/css/editormd.css" />
+</head>
+<body>
+		<div class="container-fluid">
+			<span class="btn btn-info" id="addDark">加皮肤</span>
+			<span class="btn btn-info" id="subDark">不加皮肤</span>
+			<a href="/goEdit">去编辑</a>
+			<a href="/goAdd">去新增</a>
+		</div>
+	<div class="container-fluid">
+		<div id="markdownView" class="editormd-preview-theme-dark">
+		  <textarea name="content" style="display:none;" th:text="${MD_CODE}">
+				
+		  </textarea>
+		</div>
+	</div>	
+<script src="/js/jquery.min.js"></script>
+<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- editormd start 
+-->
+<script src="/editormd/lib/marked.min.js"></script>
+<script src="/editormd/lib/prettify.min.js"></script>
+<script src="/editormd/lib/raphael.min.js"></script>
+<script src="/editormd/lib/underscore.min.js"></script>
+<script src="/editormd/lib/sequence-diagram.min.js"></script>
+<script src="/editormd/lib/flowchart.min.js"></script>
+<script src="/editormd/lib/jquery.flowchart.min.js"></script>
+<script src="/editormd/editormd.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    var markdownView;
+    markdownView = editormd.markdownToHTML("markdownView", {
+    	//htmlDecode      : "style,script,iframe",  // you can filter tags decode
+        emoji           : true,
+        taskList        : true,
+        tex             : true,  // 默认不解析
+        flowChart       : true,  // 默认不解析
+        sequenceDiagram : true,  // 默认不解析
+        previewTheme: "dark",//预览主题
+    });
+    
+})
+$(function(){
+	$("#addDark").click(function(){
+		$("#markdownView").addClass("editormd-preview-theme-dark");
+	});
+	$("#subDark").click(function(){
+		$("#markdownView").removeClass("editormd-preview-theme-dark");
+	});
+	
+})
+</script>
+</script>
+</body>
+</html>
