@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!-- 控制台打印日志的相关配置 --> 
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"> 
+    <!-- 日志格式 -->
+    <encoder>
+        <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] - %m%n</pattern>
+    </encoder>
+    <!-- 日志级别过滤器 -->
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <!-- 过滤的级别 -->
+      <level>info</level>
+      <!-- 匹配时的操作：接收 （记录） -->
+      <onMatch>ACCEPT</onMatch>
+      <!-- 不匹配时的操作：拒绝DENY（不记录）接受：ACCEPT（记录） -->
+      <onMismatch>ACCEPT</onMismatch>
+    </filter>
+  </appender>
+
+  <!-- 文件保存日志的相关配置 --> 
+  <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+     <!-- 保存日志文件的路径 
+    <file>e:/logs/admin_info.log</file>
+     -->
+     
+    <!-- linux 路径 
+    -->
+    <file>/var/logs/es_info.log</file>
+    <!-- 日志格式 -->
+    <encoder>
+        <pattern>%d{yyyy-MM-dd HH:mm:ss} [%class:%line] - %m%n</pattern>
+    </encoder>
+    <!-- 日志级别过滤器 -->
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <!-- 过滤的级别 -->
+      <level>INFO</level>
+      <!-- 匹配时的操作：接收（记录） -->
+      <onMatch>ACCEPT</onMatch>
+      <!-- 不匹配时的操作：拒绝（不记录） -->
+      <onMismatch>DENY</onMismatch>
+    </filter>
+    <!-- 循环政策：基于时间创建日志文件 -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- 日志文件名格式 
+      <fileNamePattern>e:/logs/admin_info.%d{yyyy-MM-dd}.log</fileNamePattern>
+      -->
+      <!-- linux -->
+      <fileNamePattern>/var/logs/es_info.%d{yyyy-MM-dd}.log</fileNamePattern>
+      
+      <!-- 最大保存时间：30天-->
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+  </appender>
+  
+  
+  <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+     <!-- 保存日志文件的路径 
+    <file>e:/logs/admin_error.log</file>
+     -->
+    <!-- linux路径
+     -->
+    <file>/var/logs/es_error.log</file>
+    <!-- 日志格式 -->
+    <encoder>
+        <pattern>%d{yyyy-MM-dd HH:mm:ss} [%class:%line] - %m%n</pattern>
+    </encoder>
+    <!-- 日志级别过滤器 -->
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <!-- 过滤的级别 -->
+      <level>ERROR</level>
+      <!-- 匹配时的操作：接收（记录） -->
+      <onMatch>ACCEPT</onMatch>
+      <!-- 不匹配时的操作：拒绝（不记录） -->
+      <onMismatch>DENY</onMismatch>
+    </filter>
+    <!-- 循环政策：基于时间创建日志文件 -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- 日志文件名格式 
+      <fileNamePattern>e:/logs/admin_error.%d{yyyy-MM-dd}.log</fileNamePattern>
+      -->
+      <!-- linux 
+       -->
+      <fileNamePattern>/var/logs/es_error.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <!-- 最大保存时间：30天-->
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+  </appender>
+
+  <!-- 基于dubug处理日志：具体控制台或者文件对日志级别的处理还要看所在appender配置的filter，如果没有配置filter，则使用root配置 -->
+  <root level="info">
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="file" />
+    <appender-ref ref="error" />
+  </root>
+</configuration>
+
+
