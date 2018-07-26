@@ -1,0 +1,10 @@
+spring:
+    thymeleaf:
+        encoding=UTF-8
+        content-type=text/html
+        cache=false
+        mode=LEGACYHTML5
+    messages:
+        encoding: UTF-8  
+        cache-seconds: 1  
+        basename: static/i18n/messages

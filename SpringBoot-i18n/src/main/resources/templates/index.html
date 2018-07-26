@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<title>Index</title>
+<style>
+	.language{
+		width: 1100px;
+		margin: 100px auto;
+	}
+</style>
+</head>
+<body>
+	<div class="language">
+	<div th:switch="${#locale.getCountry()}">
+		<span th:case="'CN'" >简体中文</span>
+		<span th:case="'TW'" >繁體中文</span>
+		<span th:case="'US'" >English</span>
+		<span th:case="'JP'" >日语</span>
+		<span th:case="'KR'" >韩语</span>
+	</div>
+        <ul class="langBody">
+            <li><a href="?lang=zh_CN">简体中文</a></li>
+            <li><a href="?lang=zh_TW">繁體中文</a></li>
+            <li><a href="?lang=en_US">English</a></li>
+            <li><a href="?lang=ja_JP">日语</a></li>
+            <li><a href="?lang=ko_KR">韩语</a></li>
+        </ul>
+	</div>
+	<div class="language">
+		<div th:text="#{top.lrshuai.text}">asdfSW</div>
+		<div th:text="#{top.lrshuai.name}">asdf</div>
+		<div th:text="#{top.lrshuai.age}">asdf</div>
+		<span th:text="#{message}">ffff</span><br/>
+	</div>
+</body>
+</html>
