@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8"/>
+<meta name="_ctx" th:content="@{/}" />
 <title>Index</title>
 <style>
 	.language{
@@ -33,5 +34,33 @@
 		<div th:text="#{top.lrshuai.age}">asdf</div>
 		<span th:text="#{message}">ffff</span><br/>
 	</div>
+	<input type="text" name="url" value="http://localhost:8080/api/test"/><button id="request">请求</button>
+	<div>
+		<h3>返回结果：</h3>
+		<div class="resultData"></div>
+	</div>
+	<script th:src="@{/js/jquery.min.js}"></script>
+	<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/jsonview/jquery.json-viewer.js}"></script>
+	<script type="text/javascript">
+		$(function(){
+			 $("#request").click(function(){
+				  	var url = $("input[name='url']").val();
+				  	$.ajax({
+				  		type:"get",
+				  		url:url,
+				  		cache:false,
+				  		dataType:"json",
+				  		data:{t_:new Date().getTime()},
+				  		success:function(data){
+				  			$('.resultData').jsonViewer(data);
+				  		},
+				  		error:function (jqXHR, textStatus, errorThrown){
+				  			alert(textStatus+"\n不支持跨域请求 \n详情请看控制台");
+				  		}
+				  	});
+				  });
+		})
+	</script>
 </body>
 </html>
