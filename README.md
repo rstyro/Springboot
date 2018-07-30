@@ -13,4 +13,5 @@
 - [springboot-filter-listener-interceptor](https://lrshuai.top/atc/show/46) *过滤器、拦截器、监听器*
 - [springboot-mongodb](https://lrshuai.top/atc/show/76) * 与MongoDB 整合 *
 - [springboot-elasticsearch](https://lrshuai.top/atc/show/89) *与 Elasticsearch 整合*
+- [Springboot-i18n](http://lrshuai.top/atc/show/125) *SpringBoot 国际化配置*
 - ...持续更新
