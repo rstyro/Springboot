@@ -13,5 +13,7 @@
 - [springboot-elasticsearch](https://lrshuai.top/atc/show/89) *与 Elasticsearch 整合*
 - [Springboot-i18n](http://lrshuai.top/atc/show/125) *SpringBoot 国际化配置*
 - [SpringBoot-multi-source](https://github.com/rstyro/spring-boot/tree/master/SpringBoot-multi-source) *SpringBoot 多数据源配置，全局异常自定义处理*
+- [springboot-mybatisplus](https://github.com/rstyro/spring-boot/tree/master/springboot-mybatisplus) *SpringBoot 与mybatis-plus 整合demo*
+
 
 - ...持续更新
