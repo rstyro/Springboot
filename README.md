@@ -1,6 +1,4 @@
 #### 我的博客：[http://www.lrshuai.top/blog](https://lrshuai.top/blog/label/34) 有文章介绍
-##### 虽然我知道，各位老铁来了也直接下载，然后潇潇洒洒的离开，我知道现实是多么的残酷，但是我还是想向来过的各位老铁发出诚挚的心声：
-##### 点个Star可好
 ### 项目目录介绍
 - [hello word](https://lrshuai.top/atc/show/34)    *最简单的版本*
 - [springboot-web](https://lrshuai.top/atc/show/36)     *web 版本的*
@@ -14,4 +12,6 @@
 - [springboot-mongodb](https://lrshuai.top/atc/show/76) * 与MongoDB 整合 *
 - [springboot-elasticsearch](https://lrshuai.top/atc/show/89) *与 Elasticsearch 整合*
 - [Springboot-i18n](http://lrshuai.top/atc/show/125) *SpringBoot 国际化配置*
+- [SpringBoot-multi-source](https://github.com/rstyro/spring-boot/tree/master/SpringBoot-multi-source) *SpringBoot 多数据源配置，全局异常自定义处理*
+
 - ...持续更新
