@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("top.lrshuai.plus.springbootmybatisplus.test.mapper")
+@MapperScan("top.lrshuai.plus.springbootmybatisplus.*.mapper")
 public class SpringbootMybatisplusApplication {
 
     public static void main(String[] args) {
