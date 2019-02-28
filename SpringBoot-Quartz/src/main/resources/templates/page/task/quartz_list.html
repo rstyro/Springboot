@@ -1,0 +1,354 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/css-head :: css-head">
+</head>
+<style>
+    textarea{
+        width:100%;
+        height:100px;
+    }
+</style>
+<body>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        <small></small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> 系统管理</a></li>
+        <li class="active">列表管理</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="box">
+        <div class="box-header">
+            <h3 class="box-title">定时任务列表</h3>
+            <br><br>
+            <div class="search">
+                <div class="input-group" style="float: right;width: 300px;">
+                    <input type="text" class="form-control" id="keyword" th:value="${keyword }" placeholder="请输入关键字">
+                    <span class="input-group-addon searcher" style="cursor:pointer;"><i class="fa fa-search"></i> 搜素</span>
+                </div>
+            </div>
+            <button th:onclick="add();" class="btn btn-success btn-sm" ><i class="fa fa-plus"></i> &nbsp;&nbsp;新增</button>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <table id="roleList" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>任务分组</th>
+                    <th>任务名称</th>
+                    <th>任务描述</th>
+                    <th>cron表达式</th>
+                    <th>执行类名</th>
+                    <th>任务状态</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item,stat :${list.records }" th:unless="${#lists.isEmpty(list.records)} ">
+                          <td th:text="${item.id }"></td>
+                          <td th:text="${item.jobGroup }">任务分组</td>
+                          <td th:text="${item.jobName }">任务名</td>
+                          <td th:text="${item.description }">任务描述</td>
+                          <td th:text="${item.cronExpression }">cron表达式</td>
+                          <td th:text="${item.jobClassName }">任务执行时调用哪个类的方法 包名+类名</td>
+                          <td th:switch="${item.jobStatus }">
+                              <span class="label label-success" th:case="NONE">无</span>
+                              <span class="label label-success" th:case="NORMAL">正常</span>
+                              <span class="label label-success" th:case="PAUSED">暂停中</span>
+                              <span class="label label-success" th:case="COMPLETE">完成</span>
+                              <span class="label label-success" th:case="ERROR">错误</span>
+                              <span class="label label-success" th:case="BLOCKED">堵塞中</span>
+                              <span class="label label-success" th:case="WAITING">等待中</span>
+                              <span class="label label-success" th:case="ACQUIRED">运行中</span>
+                              <span class="label label-success" th:case="1">运行中</span>
+                              <span class="label label-warning" th:case="2">暂停中</span>
+                              <span class="label label-default" th:case="3">未执行</span>
+                          </td>
+                        <td><div th:text="${#temporals.format(item.createTime, 'yyyy-MM-dd HH:mm:ss') }" >创建时间</div></td>
+                    <td>
+                        <div class="btn btn-xs btn-success" th:data-id="${item.id }" th:onclick="start(this.getAttribute('data-id'));">启动</div>
+                        <div class="btn btn-xs btn-info" th:data-id="${item.id }" th:onclick="edit(this.getAttribute('data-id'));">修改</div>
+                        <div class="btn btn-xs btn-warning" th:data-id="${item.id }" th:onclick="pause(this.getAttribute('data-id'));" >
+                            <span th:if="${item.jobStatus == 'PAUSED'}">继续</span>
+                            <span th:unless="${item.jobStatus == 'PAUSED'}">暂停</span>
+                        </div>
+                        <div class="btn btn-xs btn-danger" th:data-id="${item.id }" th:onclick="remove(this.getAttribute('data-id'));">移除</div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <div style="max-width:800px;margin:0 auto;">
+        <div id="kkpager"></div>
+    </div>
+</section>
+
+<div class="modal fade" id="itemModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="itemModelHead">添加</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" role="form">
+                         <input type="hidden" name="id" id="id" value="0"/>
+                    <input type="hidden" name="actionurl" id="actionurl" value="/"/>
+                            <div class="form-group">
+                                <label for="jobGroup" class="col-sm-2 control-label"> 任务分组</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="jobGroup" value="" id="jobGroup" placeholder="请输入任务分组">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="jobName" class="col-sm-2 control-label"> 任务名称</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="jobName" value="" id="jobName" placeholder="请输入任务名">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description" class="col-sm-2 control-label"> 任务描述</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="description" value="" id="description" placeholder="请输入任务描述">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cronExpression" class="col-sm-2 control-label"> cron表达式</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="cronExpression" value="" id="cronExpression" placeholder="请输入cron表达式">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="jobClassName" class="col-sm-2 control-label"> 执行类名</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="jobClassName" value="" id="jobClassName" placeholder="请输入任务执行时调用哪个类的方法 包名+类名">
+                                </div>
+                            </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-success" id="submitBtn" >添加</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script th:src="@{/static/bower_components/jquery/dist/jquery.min.js}"></script>
+<script th:src="@{/static/bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
+<!-- AdminLTE App -->
+<script th:src="@{/static/dist/js/adminlte.min.js}"></script>
+<script th:src="@{/static/js/common.js}"></script>
+<script th:src="@{/static/page/src/kkpager.js}"></script>
+<script th:inline="javascript">
+    var oldJobName="";
+    var oldJobGroup="";
+    //init
+    $(function(){
+        var pageNo = getParameter('pageNo');
+        if(!pageNo){
+            pageNo = 1;
+        }
+        //生成分页
+        kkpager.generPageHtml({
+            pno : [[${list.current }]],
+            //总页码
+            total : [[${list.pages }]],
+            //总数据条数
+            totalRecords : [[${list.total }]],
+            mode : 'click',//默认值是link，可选link或者click
+            click : function(n){
+                //手动选中按钮
+                this.selectPage(n);
+                skipPage(n);
+                return false;
+            }
+        });
+
+        //提交按钮
+        $("#submitBtn").click(function(){
+            var url = $("input[name='actionurl']").val();
+            var id = $("#id").val();
+            var jobGroup = $("#jobGroup").val();
+            var jobName = $("#jobName").val();
+            var description = $("#description").val();
+            var cronExpression = $("#cronExpression").val();
+            var jobClassName = $("#jobClassName").val();
+            var jobStatus = $("#jobStatus").val();
+            if(checkData(jobGroup,jobName,description,cronExpression,jobClassName,jobStatus)){
+                $.ajax({
+                    type:"POST",
+                    url:_ctx+url,
+                    cache:false,
+                    data:{id:id,jobGroup:jobGroup,jobName:jobName,description:description,cronExpression:cronExpression,jobClassName:jobClassName,jobStatus:jobStatus,oldJobName:oldJobName,oldJobGroup:oldJobGroup, time:new Date().getTime()},
+                    dataType:"json",
+                     success:function(data){
+                    if(data.status == "200"){
+                        window.location.href=window.location.href;
+                    }else{
+                        alert(data.message);
+                    }
+                }
+            });
+                $("#itemModal").modal("hide");
+            }
+
+        });
+
+        //搜索
+        $(".searcher").click(function(){
+            skipPage("");
+        });
+    });
+    var listUrl = "/task/quartz/page";
+    var editUrl = "/task/quartz/edit";
+    var addUrl = "/task/quartz/add";
+    var delUrl = "/task/quartz/remove";
+    var queryUrl = "/task/quartz/query";
+
+    var startUrl = "/task/quartz/start";
+    var pauseUrl = "/task/quartz/pause";
+
+    //跳转页面
+    function  skipPage(pageNo) {
+        var keyword = $("#keyword").val();
+        window.location.href=_ctx+listUrl+"?keyword="+keyword+"&pageNum="+pageNo;
+    }
+
+    /**
+     * 新增
+     * */
+    function add(){
+        $("input[name='actionurl']").val(addUrl);
+        $("#modelHead").text("新增");
+        $("#submitBtn").text("新增");
+        setData("","","","","","");
+        $("#itemModal").modal("show");
+    }
+
+    //启动
+    function start(id){
+        $.post(_ctx+startUrl,{t:new Date().getTime(),id:id},function(data){
+            console.log("data:",data);
+            if(data.status == "200"){
+               alert("启动成功");
+                window.location.href=window.location.href;
+            }else{
+                alert(data.message);
+            }
+        })
+    }
+
+    /**
+     * 编辑
+     *
+     * */
+    function edit(id){
+        $("#modelHead").text("编辑");
+        $("#submitBtn").text("编辑");
+        $("input[name='actionurl']").val(editUrl);
+        $.get(_ctx+queryUrl,{t:new Date().getTime(),id:id},function(data){
+            console.log("data:",data);
+            if(data.status == "200"){
+                var item = data.data;
+                console.log("item:",item);
+                setData( item.id , item.jobGroup , item.jobName , item.description , item.cronExpression , item.jobClassName );
+                oldJobGroup=item.jobGroup;
+                oldJobName=item.jobName;
+            }else{
+                alert(data.message);
+            }
+        })
+        $("#itemModal").modal("show");
+    }
+
+    //暂停
+    function pause(id) {
+        $.post(_ctx+pauseUrl,{t:new Date().getTime(),id:id},function(data){
+            console.log("data:",data);
+            if(data.status == "200"){
+                alert("任务更改成功");
+                window.location.href=window.location.href;
+            }else{
+                alert(data.message);
+            }
+        })
+    }
+
+    /**
+     * 删除
+     * */
+    function remove(id){
+        if(confirm("若任务是启动状态将停止后移除，您确定要移除任务吗？"))
+        $.post(_ctx+delUrl,{t:new Date().getTime(),id:id},function(data){
+            if(data.status == "200"){
+                alert("任务已移除");
+                window.location.href=window.location.href;
+            }else{
+                alert(data.message);
+            }
+        });
+    }
+
+
+
+    /**
+     * 校验参数
+     * @returns {boolean}
+     */
+    function checkData(jobGroup,jobName,description,cronExpression,jobClassName){
+            if(jobGroup == ""){
+                alert("任务分组不能为空");
+                $("input[name='jobGroup']").focus();
+                return false;
+             }
+            if(jobName == ""){
+                alert("任务名不能为空");
+                $("input[name='jobName']").focus();
+                return false;
+             }
+            if(description == ""){
+                alert("任务描述不能为空");
+                $("input[name='description']").focus();
+                return false;
+             }
+            if(cronExpression == ""){
+                alert("cron表达式不能为空");
+                $("input[name='cronExpression']").focus();
+                return false;
+             }
+            if(jobClassName == ""){
+                alert("任务执行类名不能为空");
+                $("input[name='jobClassName']").focus();
+                return false;
+             }
+        return true;
+    }
+
+    /**
+     *  赋值
+      */
+    function setData(  id , jobGroup , jobName , description , cronExpression , jobClassName ){
+         $("#id").val(id);
+         $("#jobGroup").val(jobGroup);
+         $("#jobName").val(jobName);
+         $("#description").val(description);
+         $("#cronExpression").val(cronExpression);
+         $("#jobClassName").val(jobClassName);
+
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+server:
+  port: 8080
+  max-http-header-size: 10000000
+  tomcat:
+    max-http-post-size: -1
+mybatis-plus:
+  mapper-locations:
+  - classpath:mapper/*/*.xml
+  - classpath*:mapper/*/*/*.xml
+  type-aliases-package: top.lrhuai.timer.*.entity
+spring:
+  datasource:
+    sql-script-encoding: UTF-8
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/quartz?useUnicode=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&serverTimezone=Hongkong
+    username: root
+    password: root
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 15
+      auto-commit: true
+      idle-timeout: 30000
+      connection-timeout: 30000
+      pool-name: HikariCP
+      max-lifetime: 1800000
+  thymeleaf:
+    mode: LEGACYHTML5
+    encoding: UTF-8
+    cache: false
+    servlet:
+      content-type: text/html
+
+  quartz:
+    job-store-type: jdbc

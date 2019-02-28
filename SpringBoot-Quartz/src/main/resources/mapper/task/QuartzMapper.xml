@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.lrshuai.timer.task.mapper.QuartzMapper">
+
+    <select id="getQuartCount" resultType="java.lang.Long">
+        SELECT
+            COUNT(*)
+        FROM
+            qrtz_job_details AS job
+        LEFT JOIN
+            qrtz_triggers AS tri
+        ON
+            job.JOB_NAME = tri.JOB_NAME
+        LEFT JOIN
+            qrtz_cron_triggers AS cron
+        ON
+        cron.TRIGGER_NAME = tri.TRIGGER_NAME
+        WHERE
+            tri.TRIGGER_TYPE = 'CRON'
+    </select>
+
+    <select id="getQuartzListPage" parameterType="string" resultType="top.lrshuai.timer.task.entity.Quartz">
+        SELECT
+            a.id,
+            a.job_group,
+            a.job_name,
+            a.description,
+            a.cron_expression,
+            a.job_class_name,
+            a.create_time,
+            a.create_by,
+            a.modify_by,
+            a.modify_time,
+            IFNULL(b.TRIGGER_STATE,a.job_status) as job_status
+        from
+          task_quartz a
+        LEFT JOIN
+          qrtz_triggers b
+        ON
+        a.job_name=b.JOB_NAME and a.job_group=b.JOB_GROUP
+       <where>
+        <if test="keyword != null and keyword != ''">
+            a.job_name LIKE CONCAT('%',#{keyword},'%')
+            OR
+            a.job_group LIKE CONCAT('%',#{keyword},'%')
+        </if>
+        </where>
+        order by
+          a.create_time desc
+    </select>
+
+</mapper>

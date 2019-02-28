@@ -1,0 +1,43 @@
+		<aside th:fragment="admin-left" class="main-sidebar">
+			<!-- sidebar: style can be found in sidebar.less 菜单-->
+			<section class="sidebar">
+				<div class="user-panel">
+					<div class="pull-left image">
+						<img src="/images/logo.png"  style="height: 45px !important;"  class="img-circle"
+							alt="User Image">
+					</div>
+					<div class="pull-left info">
+						<p>rstyro</p>
+						<a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+					</div>
+				</div>
+				<!-- search form -->
+				<form action="#" method="get" class="sidebar-form">
+					<div class="input-group">
+						<input type="text" name="q" class="form-control"
+							placeholder="Search..."> <span class="input-group-btn">
+							<button type="submit" name="search" id="search-btn"
+								class="btn btn-flat">
+								<i class="fa fa-search"></i>
+							</button>
+						</span>
+					</div>
+				</form>
+
+				<ul class="sidebar-menu" data-widget="tree">
+					<li class="header">主导航</li>
+					<li class="treeview" ><a  href="#">
+							<i class="fa fa-dashboard" ></i>
+							<span >菜单</span>
+						<span class="pull-right-container"> <i class="fa fa-angle-left pull-right"></i> </span>
+					</a>
+						<ul class="treeview-menu">
+							<li >
+								<a target="mainFrame" href="/task/quartz/page"> <i class="fa fa-circle-o"></i> <label >定时任务</label> </a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<!-- /.sidebar -->
+		</aside>

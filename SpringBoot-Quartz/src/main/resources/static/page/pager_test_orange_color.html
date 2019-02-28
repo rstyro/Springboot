@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>test page</title>
+<script type="text/javascript" src="lib/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="src/kkpager.min.js"></script>
+<link rel="stylesheet" type="text/css" href="src/kkpager_orange.css" />
+</head>
+<body>
+<div style="width:800px;margin:0 auto;">
+<div id="kkpager"></div>
+</div>
+<script type="text/javascript">
+function getParameter(name) { 
+	var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"); 
+	var r = window.location.search.substr(1).match(reg); 
+	if (r!=null) return unescape(r[2]); return null;
+}
+
+//init
+$(function(){
+	var totalPage = 20;
+	var totalRecords = 390;
+	var pageNo = getParameter('pno');
+	if(!pageNo){
+		pageNo = 1;
+	}
+	//生成分页
+	//有些参数是可选的，比如lang，若不传有默认值
+	kkpager.generPageHtml({
+		pno : pageNo,
+		//总页码
+		total : totalPage,
+		//总数据条数
+		totalRecords : totalRecords,
+		//链接前部
+		hrefFormer : 'pager_test_orange_color',
+		//链接尾部
+		hrefLatter : '.html',
+		getLink : function(n){
+			return this.hrefFormer + this.hrefLatter + "?pno="+n;
+		}
+		/*
+		,lang				: {
+			firstPageText			: '首页',
+			firstPageTipText		: '首页',
+			lastPageText			: '尾页',
+			lastPageTipText			: '尾页',
+			prePageText				: '上一页',
+			prePageTipText			: '上一页',
+			nextPageText			: '下一页',
+			nextPageTipText			: '下一页',
+			totalPageBeforeText		: '共',
+			totalPageAfterText		: '页',
+			currPageBeforeText		: '当前第',
+			currPageAfterText		: '页',
+			totalInfoSplitStr		: '/',
+			totalRecordsBeforeText	: '共',
+			totalRecordsAfterText	: '条数据',
+			gopageBeforeText		: '&nbsp;转到',
+			gopageButtonOkText		: '确定',
+			gopageAfterText			: '页',
+			buttonTipBeforeText		: '第',
+			buttonTipAfterText		: '页'
+		}*/
+		
+		//,
+		//mode : 'click',//默认值是link，可选link或者click
+		//click : function(n){
+		//	this.selectPage(n);
+		//  return false;
+		//}
+	});
+});
+</script>
+<div style="width:800px;margin:0 auto;">
+<h3>引入代码：</h3>
+<textarea style="width:800px;height:60px;">
+<script type="text/javascript" src="lib/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="src/kkpager.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../src/kkpager_orange.css" />
+</textarea>
+<h3>调用代码：</h3>
+<textarea style="width:800px;height:300px;">
+<script type="text/javascript">
+//init
+$(function(){
+	//生成分页
+	//有些参数是可选的，比如lang，若不传有默认值
+	kkpager.generPageHtml({
+		pno : pageNo,
+		//总页码
+		total : totalPage,
+		//总数据条数
+		totalRecords : totalRecords,
+		//链接前部
+		hrefFormer : 'pager_test_orange_color',
+		//链接尾部
+		hrefLatter : '.html',
+		getLink : function(n){
+			return this.hrefFormer + this.hrefLatter + "?pno="+n;
+		}
+		/*
+		,lang				: {
+			firstPageText			: '首页',
+			firstPageTipText		: '首页',
+			lastPageText			: '尾页',
+			lastPageTipText			: '尾页',
+			prePageText				: '上一页',
+			prePageTipText			: '上一页',
+			nextPageText			: '下一页',
+			nextPageTipText			: '下一页',
+			totalPageBeforeText		: '共',
+			totalPageAfterText		: '页',
+			currPageBeforeText		: '当前第',
+			currPageAfterText		: '页',
+			totalInfoSplitStr		: '/',
+			totalRecordsBeforeText	: '共',
+			totalRecordsAfterText	: '条数据',
+			gopageBeforeText		: '&nbsp;转到',
+			gopageButtonOkText		: '确定',
+			gopageAfterText			: '页',
+			buttonTipBeforeText		: '第',
+			buttonTipAfterText		: '页'
+		}*/
+		
+		//,
+		//mode : 'click',//默认值是link，可选link或者click
+		//click : function(n){
+		//	this.selectPage(n);
+		//  return false;
+		//}
+	});
+});
+</script>
+</textarea>
+<h3>其他示例：</h3>
+<a href="demo.html?pno=17">kkpager示例：蓝色皮肤</a><br/>
+<a href="pager_test_clickmode.html?pno=17">kkpager示例：click模式</a><br/>
+<div>
+</body>
+</html>
