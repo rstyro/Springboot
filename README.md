@@ -1,4 +1,4 @@
-#### 我的博客：[http://www.lrshuai.top/blog](https://lrshuai.top/blog/label/34) 有文章介绍
+
 ### 项目目录介绍
 - [hello word](https://lrshuai.top/atc/show/34)    *最简单的版本*
 - [Springboot-web](https://lrshuai.top/atc/show/36)     *web 版本的*
