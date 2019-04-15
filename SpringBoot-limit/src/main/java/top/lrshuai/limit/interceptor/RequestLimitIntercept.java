@@ -56,17 +56,15 @@ public class RequestLimitIntercept extends HandlerInterceptorAdapter {
     }
     //判断请求是否受限
     public boolean isLimit(HttpServletRequest request,RequestLimit requestLimit){
-        int count = requestLimit.count();
-        int second = requestLimit.second();
         // 受限的redis 缓存key ,因为这里用浏览器做测试，我就用sessionid 来做唯一key,如果是app ,可以使用 用户ID 之类的唯一标识。
         String limitKey = request.getServletPath()+request.getSession().getId();
         // 从缓存中获取，当前这个请求访问了几次
         Integer redisCount = (Integer) redisTemplate.opsForValue().get(limitKey);
         if(redisCount == null){
             //初始 次数
-            redisTemplate.opsForValue().set(limitKey,1,second, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(limitKey,1,requestLimit.second(), TimeUnit.SECONDS);
         }else{
-            if(redisCount.intValue() >= count){
+            if(redisCount.intValue() >= requestLimit.maxCount()){
                 return true;
             }
             // 次数自增

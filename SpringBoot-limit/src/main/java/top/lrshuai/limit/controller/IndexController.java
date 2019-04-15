@@ -8,7 +8,7 @@ import top.lrshuai.limit.common.Result;
 
 @RestController
 @RequestMapping("/index")
-@RequestLimit(count = 5,second = 1)
+@RequestLimit(maxCount = 5,second = 1)
 public class IndexController {
 
     /**

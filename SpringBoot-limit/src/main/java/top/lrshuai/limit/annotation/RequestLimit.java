@@ -37,5 +37,5 @@ import java.lang.annotation.*;
 public @interface RequestLimit {
     // 在 second 秒内，只能请求 count 次
     int second() default 1;
-    int count() default 1;
+    int maxCount() default 1;
 }

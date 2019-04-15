@@ -11,15 +11,7 @@ public enum ApiResultEnum {
 	ERROR_MOTHODNOTSUPPORT("505","请求方法错误"),
 
 
-
-
-
-
-
 	REQUST_LIMIT("10001","请求次数受限"),
-
-
-
 	;
 	
 	private String message;
