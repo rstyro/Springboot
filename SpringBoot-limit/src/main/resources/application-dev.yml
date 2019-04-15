@@ -1,0 +1,15 @@
+server:
+  port: 8000
+spring:
+  redis:
+    password:
+    database: 0
+    port: 6379
+    host: 127.0.0.1
+    lettuce:
+      pool:
+        max-idle: 10
+        min-idle: 0
+        max-active: 10
+        max-wait: -1ms
+    timeout: 10000ms
