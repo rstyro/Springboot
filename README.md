@@ -15,6 +15,6 @@
 - [SpringBoot-multi-source](https://github.com/rstyro/spring-boot/tree/master/SpringBoot-multi-source) *SpringBoot 多数据源配置，全局异常自定义处理*
 - [Springboot2-mybatisplus](https://github.com/rstyro/spring-boot/tree/master/springboot-mybatisplus) *SpringBoot 与mybatis-plus 整合demo*
 - [Springboot2-quartz](https://github.com/rstyro/Springboot/tree/master/SpringBoot-Quartz) *SpringBoot 与Quartz 整合 可动态配置的定时任务*
-
+- [Springboot2-limit](https://github.com/rstyro/Springboot/tree/master/SpringBoot-limit) *Springboot api 请求防刷，时间内限制请求次数*
 
 - ...持续更新
