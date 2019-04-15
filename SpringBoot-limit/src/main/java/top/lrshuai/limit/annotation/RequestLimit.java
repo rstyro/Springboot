@@ -5,9 +5,6 @@ import java.lang.annotation.*;
 /**
  * 请求限制的自定义注解
  *
- * @Inherited 指示批注类型是自动继承的。如果在注释类型声明中存在继承的元注释，并且用户在类声明上查询注释类型，并且类声明对该类没有注释，那么该类的超类将自动被查询到注释类型。
- * 这个过程将被重复，直到找到这个类型的注释，或者到达类层次结构(对象)的顶端。如果没有超类具有此类的注释，那么查询将表明该类没有此类注释
- *
  * @Target 注解可修饰的对象范围，ElementType.METHOD 作用于方法，ElementType.TYPE 作用于类
  * (ElementType)取值有：
  * 　　　　1.CONSTRUCTOR:用于描述构造器
@@ -35,7 +32,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD,ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequestLimit {
-    // 在 second 秒内，只能请求 count 次
+    // 在 second 秒内，最大只能请求 maxCount 次
     int second() default 1;
     int maxCount() default 1;
 }
