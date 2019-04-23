@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
@@ -38,12 +39,8 @@ public class RequestLimitIntercept extends HandlerInterceptorAdapter {
             //HandlerMethod 封装方法定义相关的信息,如类,方法,参数等
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             Method method = handlerMethod.getMethod();
-            // 获取方法中是否包含注解
-            RequestLimit methodAnnotation = method.getAnnotation(RequestLimit.class);
-            //获取 类中是否包含注解，也就是controller 是否有注解
-            RequestLimit classAnnotation = method.getDeclaringClass().getAnnotation(RequestLimit.class);
             // 如果 方法上有注解就优先选择方法上的参数，否则类上的参数
-            RequestLimit requestLimit = methodAnnotation != null?methodAnnotation:classAnnotation;
+            RequestLimit requestLimit = getTagAnnotation(method, RequestLimit.class);
             if(requestLimit != null){
                 if(isLimit(request,requestLimit)){
                     resonseOut(response,Result.error(ApiResultEnum.REQUST_LIMIT));
@@ -70,6 +67,22 @@ public class RequestLimitIntercept extends HandlerInterceptorAdapter {
             redisTemplate.opsForValue().increment(limitKey);
         }
         return false;
+    }
+
+    /**
+     * 获取目标注解
+     * 如果方法上有注解就返回方法上的注解配置，否则类上的
+     * @param method
+     * @param annotationClass
+     * @param <A>
+     * @return
+     */
+    public <A extends Annotation> A getTagAnnotation(Method method, Class<A> annotationClass) {
+        // 获取方法中是否包含注解
+        Annotation methodAnnotate = method.getAnnotation(annotationClass);
+        //获取 类中是否包含注解，也就是controller 是否有注解
+        Annotation classAnnotate = method.getDeclaringClass().getAnnotation(annotationClass);
+        return (A) (methodAnnotate!= null?methodAnnotate:classAnnotate);
     }
 
     /**
