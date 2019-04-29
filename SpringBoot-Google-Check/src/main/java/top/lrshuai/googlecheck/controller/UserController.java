@@ -3,17 +3,22 @@ package top.lrshuai.googlecheck.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import top.lrshuai.googlecheck.annotation.NeedLogin;
 import top.lrshuai.googlecheck.base.BaseController;
 import top.lrshuai.googlecheck.common.Result;
 import top.lrshuai.googlecheck.dto.GoogleDTO;
 import top.lrshuai.googlecheck.dto.LoginDTO;
 import top.lrshuai.googlecheck.service.UserService;
+import top.lrshuai.googlecheck.utils.QRCodeUtil;
 
-@RestController
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.OutputStream;
+
+@Controller
 @RequestMapping("/user")
 @Api(tags = "用户模块")
 public class UserController extends BaseController {
@@ -23,6 +28,7 @@ public class UserController extends BaseController {
 
     @GetMapping("/register")
     @ApiOperation("注册")
+    @ResponseBody
     public Result register(LoginDTO dto) throws Exception {
         return userService.register(dto);
     }
@@ -30,40 +36,57 @@ public class UserController extends BaseController {
 
     @GetMapping("/login")
     @ApiOperation("登录")
+    @ResponseBody
     public Result login(LoginDTO dto)throws Exception{
         return userService.login(dto);
     }
 
-    @GetMapping("/getData")
-    @NeedLogin(google = true)
-    @ApiOperation("获取数据")
-    public Result getData()throws Exception{
-        return userService.getData();
-    }
-
 
     @GetMapping("/generateGoogleSecret")
+    @ResponseBody
     @NeedLogin
     @ApiOperation("生成google密钥")
     public Result generateGoogleSecret()throws Exception{
         return userService.generateGoogleSecret(this.getUser());
     }
 
+    /**
+     * 地址栏请求，显示一个二维码图片
+     * @param secretQrCode   generateGoogleSecret接口放回的：secretQrCode
+     * @param response
+     * @throws Exception
+     */
+    @GetMapping("/genQrCode")
+    public void genQrCode(String secretQrCode, HttpServletResponse response) throws Exception{
+        response.setContentType("image/png");
+        OutputStream stream = response.getOutputStream();
+        QRCodeUtil.encode(secretQrCode,stream);
+    }
+
 
     @GetMapping("/bindGoogle")
+    @ResponseBody
     @NeedLogin
     @ApiOperation("绑定google验证")
     public Result bindGoogle(GoogleDTO dto)throws Exception{
         return userService.bindGoogle(dto,this.getUser(),this.getRequest());
     }
 
-
     @GetMapping("/googleLogin")
+    @ResponseBody
     @NeedLogin
     @ApiOperation("google登录")
     public Result googleLogin(Long code) throws Exception{
         return userService.googleLogin(code,this.getUser(),this.getRequest());
     }
 
+
+    @GetMapping("/getData")
+    @NeedLogin(google = true)
+    @ApiOperation("获取数据")
+    @ResponseBody
+    public Result getData()throws Exception{
+        return userService.getData();
+    }
 
 }
