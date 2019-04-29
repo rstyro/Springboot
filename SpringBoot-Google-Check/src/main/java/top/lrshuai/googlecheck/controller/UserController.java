@@ -27,7 +27,7 @@ public class UserController extends BaseController {
     private UserService userService;
 
     @GetMapping("/register")
-    @ApiOperation("注册")
+    @ApiOperation("1、注册")
     @ResponseBody
     public Result register(LoginDTO dto) throws Exception {
         return userService.register(dto);
@@ -35,7 +35,7 @@ public class UserController extends BaseController {
 
 
     @GetMapping("/login")
-    @ApiOperation("登录")
+    @ApiOperation("2、登录")
     @ResponseBody
     public Result login(LoginDTO dto)throws Exception{
         return userService.login(dto);
@@ -45,18 +45,22 @@ public class UserController extends BaseController {
     @GetMapping("/generateGoogleSecret")
     @ResponseBody
     @NeedLogin
-    @ApiOperation("生成google密钥")
+    @ApiOperation("3、生成google密钥")
     public Result generateGoogleSecret()throws Exception{
         return userService.generateGoogleSecret(this.getUser());
     }
 
     /**
-     * 地址栏请求，显示一个二维码图片
-     * @param secretQrCode   generateGoogleSecret接口放回的：secretQrCode
+     * 注意：这个需要地址栏请求,因为返回的是一个流
+     * 注意：这个需要地址栏请求,因为返回的是一个流
+     * 注意：这个需要地址栏请求,因为返回的是一个流
+     * 显示一个二维码图片
+     * @param secretQrCode   generateGoogleSecret接口返回的：secretQrCode
      * @param response
      * @throws Exception
      */
     @GetMapping("/genQrCode")
+    @ApiOperation("4、生成二维码，这个去地址栏请求，不要用Swagger-ui请求")
     public void genQrCode(String secretQrCode, HttpServletResponse response) throws Exception{
         response.setContentType("image/png");
         OutputStream stream = response.getOutputStream();
@@ -67,7 +71,7 @@ public class UserController extends BaseController {
     @GetMapping("/bindGoogle")
     @ResponseBody
     @NeedLogin
-    @ApiOperation("绑定google验证")
+    @ApiOperation("5、绑定google验证")
     public Result bindGoogle(GoogleDTO dto)throws Exception{
         return userService.bindGoogle(dto,this.getUser(),this.getRequest());
     }
@@ -75,7 +79,7 @@ public class UserController extends BaseController {
     @GetMapping("/googleLogin")
     @ResponseBody
     @NeedLogin
-    @ApiOperation("google登录")
+    @ApiOperation("6、google登录")
     public Result googleLogin(Long code) throws Exception{
         return userService.googleLogin(code,this.getUser(),this.getRequest());
     }
@@ -83,7 +87,7 @@ public class UserController extends BaseController {
 
     @GetMapping("/getData")
     @NeedLogin(google = true)
-    @ApiOperation("获取数据")
+    @ApiOperation("7、获取数据")
     @ResponseBody
     public Result getData()throws Exception{
         return userService.getData();

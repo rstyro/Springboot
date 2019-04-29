@@ -25,6 +25,10 @@ public class UserService {
     @Autowired
     private RedisTemplate<String,Object> redisTemplate;
 
+    /**
+     * 获取缓存中的数据
+     * @return
+     */
     public Result getData(){
         Map<String,Object> data = new HashMap<>();
         setData(CacheKey.REGISTER_USER_KEY,data);
@@ -41,6 +45,12 @@ public class UserService {
         }
     }
 
+    /**
+     * 注册
+     * @param dto
+     * @return
+     * @throws Exception
+     */
     public Result register(LoginDTO dto) throws Exception {
         User user = new User();
         user.setUserId(Tools.getUUID());
@@ -50,18 +60,14 @@ public class UserService {
         return Result.ok();
     }
 
-    /**
-     * 校验用户是否存在
-     */
+
+    //获取用户
     public User getUser(String username){
         User cacheUser = (User) redisTemplate.opsForValue().get(String.format(CacheKey.REGISTER_USER, username));
         return cacheUser;
     }
 
-    /**
-     * 添加用户
-     * @param user
-     */
+    //添加注册用户
     public void addUser(User user){
         if(user == null) throw new ApiException(ApiResultEnum.ERROR_NULL);
         User isRepeat = getUser(user.getUsername());
@@ -71,13 +77,19 @@ public class UserService {
         redisTemplate.opsForValue().set(String.format(CacheKey.REGISTER_USER, user.getUsername()),user,1, TimeUnit.DAYS);
     }
 
+    //更新token用户
     public void updateUser(User user,HttpServletRequest request){
         if(user == null) throw new ApiException(ApiResultEnum.ERROR_NULL);
         redisTemplate.opsForValue().set(Tools.getTokenKey(request,CacheEnum.LOGIN),user,1, TimeUnit.DAYS);
     }
 
 
-
+    /**
+     * 登录
+     * @param dto
+     * @return
+     * @throws Exception
+     */
     public Result login(LoginDTO dto) throws Exception {
         User user = getUser(dto.getUsername());
         if(user == null){
