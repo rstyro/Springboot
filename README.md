@@ -18,7 +18,7 @@
 - [Springboot2-mybatisplus](https://github.com/rstyro/spring-boot/tree/master/springboot-mybatisplus) *SpringBoot 与mybatis-plus 整合demo*
 - [Springboot2-quartz](https://rstyro.github.io/blog/2019/02/28/Springboot2%E4%B8%8EQuartz%E7%9A%84%E4%BA%B2%E5%AF%86%E6%8E%A5%E8%A7%A6/) *SpringBoot 与Quartz 整合 可动态配置的定时任务*
 - [Springboot2-limit](https://rstyro.github.io/blog/2019/04/15/api%E6%8E%A5%E5%8F%A3%E9%98%B2%E5%88%B7/) *Springboot api 请求防刷，时间内限制请求次数*
-- [Springboot2-JWT](https://rstyro.github.io/blog/2019/04/16/SpringBoot-JWT/) *Springboot jwt ,JSON Web Token *
+- [SpringBoot2-JWT](https://rstyro.github.io/blog/2019/04/16/SpringBoot-JWT/) *Springboot jwt ,JSON Web Token *
 - [SpringBoot-Google-Check](https://rstyro.github.io/blog/2019/04/29/SpringBoot-Google%E4%BA%8C%E6%AD%A5%E9%AA%8C%E8%AF%81/) *Springboot Google 二步验证 *
-
+- [SpringBoot2-Redisson](https://rstyro.github.io/blog/2019/06/25/SpringBoot2%E4%B8%8ERedisson%E7%A2%B0%E6%92%9E/) *SpringBoot 与Redisson 整合之分布式锁与发布订阅*
 - ...持续更新
