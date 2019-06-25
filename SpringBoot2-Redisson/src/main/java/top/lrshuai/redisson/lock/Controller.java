@@ -54,6 +54,8 @@ public class Controller {
         return SUCCESS;
     }
 
+    //发布消息
+    @GetMapping("/publish")
     public Object publish(MyObjectDTO dto){
         return  this.publish.publish(dto);
     }
