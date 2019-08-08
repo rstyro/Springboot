@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.lrshuai.cache.act.mapper.ActicleMapper">
+
+
+    <insert id="save" parameterType="top.lrshuai.cache.act.entity.Acticle" keyProperty="id" useGeneratedKeys="true">
+        insert into act_acticle(
+            title,
+            content,
+            create_time,
+            create_by,
+            modify_time,
+            modify_by
+        )values(
+            #{title},
+            #{content},
+            #{createTime},
+            #{createBy},
+            #{modifyTime},
+            #{modifyBy}
+        )
+    </insert>
+
+    <update id="update">
+        update act_acticle
+        set
+            title=#{title},
+            content=#{content},
+            modify_by=#{modifyBy},
+            modify_time=#{modifyTime}
+        where
+            id=#{id}
+    </update>
+
+    <delete id="del">
+        delete from act_acticle where id=#{id}
+    </delete>
+    <select id="queryById" resultType="top.lrshuai.cache.act.entity.Acticle">
+        select * from act_acticle where id=#{id}
+    </select>
+
+    <select id="queryByTitle" resultType="top.lrshuai.cache.act.entity.Acticle">
+        select * from act_acticle where title like concat('%',#{title},'%')
+    </select>
+
+    <select id="getActicleList" resultType="top.lrshuai.cache.act.entity.Acticle">
+        select * from act_acticle
+    </select>
+
+</mapper>
