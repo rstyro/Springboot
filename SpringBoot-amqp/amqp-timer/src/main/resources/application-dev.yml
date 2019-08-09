@@ -1,0 +1,51 @@
+
+server:
+  port: 8083
+
+mybatis-plus:
+  mapper-locations:
+    - classpath:mapper/*/*.xml
+    - classpath*:mapper/*/*/*.xml
+  # 配置slq打印日志
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.lrshuai.amqp.commons.sys.entity
+  #配置逻辑删除
+  global-config:
+    db-config:
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mqtest?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Hongkong&autoReconnect=true&allowPublicKeyRetrieval=true
+    username: rstyro
+    password: rstyro
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    # druid config
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    filters: 'stat,wall,log4j'
+    initialSize: 5
+    maxActive: 20
+    maxPoolPreparedStatementPerConnectionSize: 20
+    maxWait: 60000
+    minEvictableIdleTimeMillis: 300000
+    minIdle: 5
+    poolPreparedStatements: true
+    testOnBorrow: false
+    testOnReturn: false
+    testWhileIdle: true
+    timeBetweenEvictionRunsMillis: 60000
+    validationQuery: SELECT 1 FROM DUAL
+
+  rabbitmq:
+    addresses: 127.0.0.1:5672
+    username: guest
+    password: guest
+    virtual-host: /
+    connection-timeout: 15000
+    publisher-confirms: true
+    publisher-returns: true
+    template:
+      mandatory: true
