@@ -1,2 +1,18 @@
 server:
   port: 8800
+spring:
+  thymeleaf:
+    enabled: true
+    cache: false
+    check-template: true
+    check-template-location: true
+    encoding: utf-8
+    mode: HTML5
+
+api:
+  encrypt:
+    rsa:
+      publicKey: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCJvCDW9GIBsiv9ma9r2btffIxQQHB98Pl1S2RV2PrQsK1O2yFSUf8P43l5EfAh+jiEn/k5egKEoeMRLdDZkt5afNgPYbNjiRFJP8NZTw4f3Yxp91+d04GGkeFcj59QIn/rqqHo2JLOESNae8IC1tKKQTqkwVIjLRwTIDcVmsq9NwIDAQAB
+      privateKey: MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIm8INb0YgGyK/2Zr2vZu198jFBAcH3w+XVLZFXY+tCwrU7bIVJR/w/jeXkR8CH6OISf+Tl6AoSh4xEt0NmS3lp82A9hs2OJEUk/w1lPDh/djGn3X53TgYaR4VyPn1Aif+uqoejYks4RI1p7wgLW0opBOqTBUiMtHBMgNxWayr03AgMBAAECgYBKaAMlnGfFmscA/SEzFjCO6O2z/NvIbYGVx+CwL8NvMcKuMtrRadJsduqMaRBcipw1qWYtkqgBlqLgCOwmXZ0YYfeIip63ucQ0KLCJOKcPyP8TIUbiHr/RfYLip7bHTycgav+icYWxTx+NWQVwI4BMpexuwjnilRKFEur0s4BoAQJBAMSt225txa0xZVh+UOjw9GuYlf3aHLiPkQ4OKb7MTi0ufdfJ+U5oJFqEvVQsYVdWRMY8OWYp9UtvG13CFBpMkjcCQQCzRwV0ekTbwmdLoOEcypcvFw5AqIF/lYwjRr7uJGA79cYyoxUaSlem79siEaVAUFX6xOLRpqen9zovnQJwSa0BAkAztHUEce1O27aF7ic9JeNLygBcjROR3YRHyqdk1ncS368LpLhayXwNI+pWD5jDihVoe/qnBg7Ldvkdy+DXDRw/AkAFgmM6hx9imYDPJCyG0/r9aXn4prUEFLZvxxbK/rcuYIksuTJG0o4LBUf4rg4kAdQCltZZlwOD9+cD25FdngYBAkEAmHLpYTqgjtITv7VyJ92+4MTE5f+LxpHGHPjgz4XDUHq3XfxXbZijRBFe9cBdbu3nfJxZRpmn6/ofrLb2HdBfMQ==
+    aes:
+      password: 19fdaac296d84defa43e7f29
