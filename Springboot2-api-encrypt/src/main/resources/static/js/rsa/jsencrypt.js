@@ -3025,6 +3025,15 @@ var RSAKey = /** @class */ (function () {
         }
         return pkcs1unpad2(m, (this.n.bitLength() + 7) >> 3);
     };
+
+    RSAKey.prototype.decryptByPublic = function (ctext) {
+        var c = parseBigInt(ctext, 16);
+        var m = this.doPublic(c);
+        if (m == null) {
+            return null;
+        }
+        return pkcs1unpad2(m, (this.n.bitLength() + 7) >> 3);
+    };
     // Generate a new random private key B bits long, using public expt E
     RSAKey.prototype.generateAsync = function (B, E, callback) {
         var rng = new SecureRandom();
@@ -3124,9 +3133,10 @@ function pkcs1unpad2(d, n) {
     while (i < b.length && b[i] == 0) {
         ++i;
     }
-    if (b.length - i != n - 1 || b[i] != 2) {
-        return null;
-    }
+    // 这里不判断长度了
+    // if (b.length - i != n - 1 || b[i] != 2) {
+    //     return null;
+    // }
     ++i;
     while (b[i] != 0) {
         if (++i >= b.length) {
@@ -5238,6 +5248,16 @@ var JSEncrypt = /** @class */ (function () {
         // Return the decrypted string.
         try {
             return this.getKey().decrypt(b64tohex(str));
+        }
+        catch (ex) {
+            return false;
+        }
+    };
+
+    JSEncrypt.prototype.decryptByPublic = function (str) {
+        // Return the decrypted string.
+        try {
+            return this.getKey().decryptByPublic(b64tohex(str));
         }
         catch (ex) {
             return false;

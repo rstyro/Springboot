@@ -22,7 +22,7 @@
     <button @click="postRequest">POST请求</button>
 </div>
 <script src="../static/js/vue.min.js" th:src="@{js/vue.min.js}"></script>
-<script src="../static/js/rsa/jsencrypt.min.js" th:src="@{js/rsa/jsencrypt.min.js}"></script>
+<script src="../static/js/rsa/jsencrypt.js" th:src="@{js/rsa/jsencrypt.js}"></script>
 <script src="../static/js/aes/aes.js" th:src="@{js/aes/aes.js}"></script>
 <script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
 <script>
@@ -56,14 +56,17 @@
                 encode: function () {
                     const encrypt = new JSEncrypt();
                     // 设置公钥
-                    encrypt.setPublicKey(this.rsa.publicKey);
+                    encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + this.rsa.publicKey + '-----END PUBLIC KEY-----');
+                    // encrypt.setPublicKey(this.rsa.publicKey);
                     // 加密+base64
                     this.encodeText = encrypt.encrypt(this.content);
                     console.log("encode=", this.encodeText);
 
                     // encrypt.setPublicKey(this.rsa.publicKey);
-                    // var decode = encrypt.decrypt("VHDFaE/JtspKxfI1tB+JmADEpp1R+ZPngs8mne0YJJCx9ZyB/k/Qp6CflB9zYlmM2+E+0V1uwZm79/+Ej4KQ10LjRI2eTf6b6NvkrsZRJaJpc7d8PpBVQhA3d9hQRXnadPx/d/SzsiyVzSSuJ9CCtwJer15lTvJ9/J0oRQSKJVY=");
-                    // console.log("decode=",decode);
+                    var decode1 = encrypt.decrypt("VHDFaE/JtspKxfI1tB+JmADEpp1R+ZPngs8mne0YJJCx9ZyB/k/Qp6CflB9zYlmM2+E+0V1uwZm79/+Ej4KQ10LjRI2eTf6b6NvkrsZRJaJpc7d8PpBVQhA3d9hQRXnadPx/d/SzsiyVzSSuJ9CCtwJer15lTvJ9/J0oRQSKJVY=");
+                    console.log("decosw=",decode1);
+                    var decode2 = encrypt.decryptByPublic("VHDFaE/JtspKxfI1tB+JmADEpp1R+ZPngs8mne0YJJCx9ZyB/k/Qp6CflB9zYlmM2+E+0V1uwZm79/+Ej4KQ10LjRI2eTf6b6NvkrsZRJaJpc7d8PpBVQhA3d9hQRXnadPx/d/SzsiyVzSSuJ9CCtwJer15lTvJ9/J0oRQSKJVY=");
+                    console.log("decode=",decode2);
                     var str = 'abcAAA'; // 加密内容
                     var key = this.aesPwd; // 密钥
                     var iv = '1234567890123456'; // 初始向量，不设置会随机生成(当然也就无法解密了)
