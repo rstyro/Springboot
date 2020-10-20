@@ -1,8 +1,9 @@
 package top.lrshuai.encrypt.dto;
 
+import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import lombok.ToString;
-import org.apache.commons.codec.binary.Base64;
+import lombok.experimental.Accessors;
 import top.lrshuai.encryption.AesUtils;
 import top.lrshuai.encryption.RsaUtils;
 
@@ -11,6 +12,7 @@ import top.lrshuai.encryption.RsaUtils;
  */
 @Data
 @ToString
+@Accessors(chain = true)
 public class TestDto {
     private String userId;
     private String userName;
@@ -22,10 +24,17 @@ public class TestDto {
         String rsaPrivateKey = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIm8INb0YgGyK/2Zr2vZu198jFBAcH3w+XVLZFXY+tCwrU7bIVJR/w/jeXkR8CH6OISf+Tl6AoSh4xEt0NmS3lp82A9hs2OJEUk/w1lPDh/djGn3X53TgYaR4VyPn1Aif+uqoejYks4RI1p7wgLW0opBOqTBUiMtHBMgNxWayr03AgMBAAECgYBKaAMlnGfFmscA/SEzFjCO6O2z/NvIbYGVx+CwL8NvMcKuMtrRadJsduqMaRBcipw1qWYtkqgBlqLgCOwmXZ0YYfeIip63ucQ0KLCJOKcPyP8TIUbiHr/RfYLip7bHTycgav+icYWxTx+NWQVwI4BMpexuwjnilRKFEur0s4BoAQJBAMSt225txa0xZVh+UOjw9GuYlf3aHLiPkQ4OKb7MTi0ufdfJ+U5oJFqEvVQsYVdWRMY8OWYp9UtvG13CFBpMkjcCQQCzRwV0ekTbwmdLoOEcypcvFw5AqIF/lYwjRr7uJGA79cYyoxUaSlem79siEaVAUFX6xOLRpqen9zovnQJwSa0BAkAztHUEce1O27aF7ic9JeNLygBcjROR3YRHyqdk1ncS368LpLhayXwNI+pWD5jDihVoe/qnBg7Ldvkdy+DXDRw/AkAFgmM6hx9imYDPJCyG0/r9aXn4prUEFLZvxxbK/rcuYIksuTJG0o4LBUf4rg4kAdQCltZZlwOD9+cD25FdngYBAkEAmHLpYTqgjtITv7VyJ92+4MTE5f+LxpHGHPjgz4XDUHq3XfxXbZijRBFe9cBdbu3nfJxZRpmn6/ofrLb2HdBfMQ==";
         String content = "UA1TAzo7MDZQlbM2lR7857XAZKlp7X5jYAeyFfG3+qTSuc/w/KZoUQWqku8KhFkB82cle8pyCqPHNPleYJVcy0mEFgf1ztHEHYymRm3QIPMfy8Ie8vZY8FN2rpc5zH6bdrzoSi0VxuGob/BTlXet+/eRHtZJtsWwcRNBKA2LaoU=";
         String text="abccccc";
-        System.out.println("htlm="+RsaUtils.decodeBase64ByPrivate(rsaPrivateKey, content));
-        String encodeText = RsaUtils.encodeBase64PrivateKey(rsaPrivateKey, text);
+        TestDto testDto = new TestDto().setUserId("1").setAge(20).setUserName("rstyro")
+//                .setInfo("info")
+                ;
+
+        String key = AesUtils.generateSecret(256);
+        System.out.println("key="+key);
+        String encodeText = RsaUtils.encodeBase64PublicKey(rsaPublicKey, key);
         System.out.println("encodeText="+encodeText);
-        System.out.println("decodeTest="+RsaUtils.decodeBase64ByPublicKey(rsaPublicKey, encodeText));
-        AesUtils.generateSecret(128);
+        System.out.println("decodeTest="+RsaUtils.decodeBase64ByPrivate(rsaPrivateKey, encodeText));
+        String data = JSON.toJSONString(testDto);
+        String aesEncodeData = AesUtils.encodeBase64(data, key);
+        System.out.println("aesEncodeData="+aesEncodeData);
     }
 }

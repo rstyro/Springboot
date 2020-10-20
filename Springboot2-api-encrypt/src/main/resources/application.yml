@@ -7,7 +7,7 @@ spring:
     check-template: true
     check-template-location: true
     encoding: utf-8
-    mode: HTML5
+    mode: HTML
 
 api:
   encrypt:

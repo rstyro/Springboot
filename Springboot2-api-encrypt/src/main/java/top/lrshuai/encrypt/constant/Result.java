@@ -10,12 +10,28 @@ import java.util.Map;
  * @author rstyro
  */
 public class Result extends HashMap<String, Object> {
+    /**
+     * 状态
+     */
+    public static final String STATUS="status";
+    /**
+     * 信息
+     */
+    public static final String MESSAGE="message";
+    /**
+     * 数据体
+     */
+    public static final String DATA="data";
+    /**
+     * 密钥
+     */
+    public static final String KEY="key";
 
     private static final long serialVersionUID = 1L;
 
     public Result() {
-        put("status", 200);
-        put("message", "ok");
+        put(STATUS, 200);
+        put(MESSAGE, "ok");
     }
 
     public static Result error() {
@@ -35,8 +51,8 @@ public class Result extends HashMap<String, Object> {
 
     public static Result error(String status, String msg) {
         Result r = new Result();
-        r.put("status", status);
-        r.put("message", msg);
+        r.put(STATUS, status);
+        r.put(MESSAGE, msg);
         return r;
     }
 
@@ -48,7 +64,14 @@ public class Result extends HashMap<String, Object> {
 
     public static Result ok(Object data) {
         Result r = new Result();
-        r.put("data", data);
+        r.put(DATA, data);
+        return r;
+    }
+
+    public static Result ok(Object data,String key) {
+        Result r = new Result();
+        r.put(DATA, data);
+        r.put(KEY, key);
         return r;
     }
 
