@@ -10,126 +10,214 @@
             height: 500px;
             margin: 100px auto;
         }
+
+        .mytable {
+            border: 1px solid #A6C1E4;
+            font-family: Arial;
+            border-collapse: collapse;
+        }
+
+        table th {
+            border: 1px solid black;
+            background-color: #71c1fb;
+            width: 100px;
+            height: 20px;
+            font-size: 15px;
+        }
+
+        table td {
+            border: 1px solid #A6C1E4;
+            text-align: center;
+            height: 15px;
+            padding-top: 5px;
+            font-size: 12px;
+        }
+
+        .double {
+            background-color: #c7dff6;
+        }
+
+        input {
+            width: 95%;
+            padding-left: 10px;
+        }
     </style>
 </head>
 <body>
 <div id="app">
-    <button @click="encode">加密</button>
-    <div><input type="text" v-model="content"/></div>
-    <div>{{encodeText}}</div>
-    <div>{{decodeText}}</div>
-    <button @click="getApiData">Get请求</button>
-    <button @click="postRequest">POST请求</button>
+    <table class="mytable">
+        <tr class="double">
+            <th>字段:</th>
+            <th>Value:</th>
+        </tr>
+        <tr class="double">
+            <td>userId:</td>
+            <td><input v-model="userInfo.userId"></td>
+        </tr>
+        <tr class="double">
+            <td>userName:</td>
+            <td><input v-model="userInfo.userName"></td>
+        </tr>
+        <tr class="double">
+            <td>age:</td>
+            <td><input v-model="userInfo.age"></td>
+        </tr>
+        <tr class="double">
+            <td>info:</td>
+            <td>
+                <textarea v-model="userInfo.info" cols="50" rows="5" placeholder="随便输一点"></textarea>
+            </td>
+        </tr>
+        <tr class="double">
+            <td>AES密钥:</td>
+            <td>
+                <textarea v-model="aes.key" cols="50" rows="2" placeholder="AES密钥"></textarea>
+            </td>
+        </tr>
+        <tr class="double">
+            <td>AES向量:</td>
+            <td>
+                <textarea v-model="aes.iv" cols="50" rows="1" placeholder="向量的长度为16位"></textarea>
+            </td>
+        </tr>
+    </table>
+    <button @click="testRequest">发送测试请求</button>
+    <br>
+    <div>
+        <p>要发送的数据：<span>{{parameter}}</span></p>
+        <p>加密后的数据：{{encodeContent}}</p>
+        <br>
+        <p>收到服务端的内容：{{result}}</p>
+        <p>解密服务端的内容：{{decodeContent}}</p>
+        <p>最终拿到服务端的内容：{{finalDecodeContent}}</p>
+
+    </div>
 </div>
 <script src="../static/js/vue.min.js" th:src="@{js/vue.min.js}"></script>
-<script src="../static/js/rsa/jsencrypt.js" th:src="@{js/rsa/jsencrypt.js}"></script>
+<script src="../static/js/rsa/jsencrypt.min.js" th:src="@{js/rsa/jsencrypt.min.js}"></script>
 <script src="../static/js/aes/aes.js" th:src="@{js/aes/aes.js}"></script>
-<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+<script src ="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
     window.onload = function () {
         var vm = new Vue({
             el: '#app',
             data: {
                 rsa: {
-                    publicKey: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCJvCDW9GIBsiv9ma9r2btffIxQQHB98Pl1S2RV2PrQsK1O2yFSUf8P43l5EfAh+jiEn/k5egKEoeMRLdDZkt5afNgPYbNjiRFJP8NZTw4f3Yxp91+d04GGkeFcj59QIn/rqqHo2JLOESNae8IC1tKKQTqkwVIjLRwTIDcVmsq9NwIDAQAB"
+                    // 自己的rsa公私钥
+                    mePublicKey: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCf0B4Al2wIuGK9Bj9Ao23siR2mMfkvdrxEGu2j0tNeA1LSyKOuw7FLmreRMYLCQMI4BTJNYsxUqvdS8IxFpD5hOx9mx6OqY2GQSIZq5a1lt3Rx4SpDiuuVGm7h5uuLN7bvMfaLBW3g4E5DAKapuZ/u5ULO+y2jczVXkaSb1IjNnwIDAQAB",
+                    mePrivateKey:"MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAJ/QHgCXbAi4Yr0GP0CjbeyJHaYx+S92vEQa7aPS014DUtLIo67DsUuat5ExgsJAwjgFMk1izFSq91LwjEWkPmE7H2bHo6pjYZBIhmrlrWW3dHHhKkOK65UabuHm64s3tu8x9osFbeDgTkMApqm5n+7lQs77LaNzNVeRpJvUiM2fAgMBAAECgYAq4FxcTkPm5wleq4Fm5zIDxxnUUA4J5PJH122wiUy6KWwcL0ZzCf/UR/M+Gil50oQJIaPITVyCzsfCUdVgjdtKL7x8e1dQwlI3/DLEat02Njj4fl6KsMq9EqLyleq0UdgYtevZOOoi+ZKXlqZjkM3yOsbwyu9u0D+s77KfHihwuQJBAODhWKTLywJwSXPC6CvlSoyCjscWgUadk8IN+ELyLq591DYFCQllYQPyMj8Cy0dY5OC9GvwRLZurs9LGi6C9d0UCQQC17a76RNHqmmGKsEEGIx3XIzvDrjSRmE3v+NLMcf+JUaUJiKmedDZeWnJuxIXVmFbHi2bzCb2NXUYqhuXsuJ2TAkBHxSO5VKEx4gxPOcFHYSJtva07tN8FXn0tza+SDiD/54C2zNyZdxWDYOTQX1/pIWHKqA/YqtLXf/EgL+WYI1/RAkAk+RwRgsECo8NlEzLz01kyKtfvicznNgPI3FHC+PwM5UncKSkHqeiOvmT5O/lTEnW4cg1HIVijjSxAYlACDvb/AkBmwlv6+gLoKpCU6h7+J6OxB9GKM2Hjs3Mh5tgXgveCwMg2Knz+RPIj92jq7CLm20xs2654yYnyHc4V+kzr3Zu1",
+                    // 后端的rsa公钥
+                    backPublicKey: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCJvCDW9GIBsiv9ma9r2btffIxQQHB98Pl1S2RV2PrQsK1O2yFSUf8P43l5EfAh+jiEn/k5egKEoeMRLdDZkt5afNgPYbNjiRFJP8NZTw4f3Yxp91+d04GGkeFcj59QIn/rqqHo2JLOESNae8IC1tKKQTqkwVIjLRwTIDcVmsq9NwIDAQAB"
                 },
-                aesPwd: "19fdaac296d84defa43e7f29",
-                content: 'Hello World!',
-                encodeText: "加密内容",
-                decodeText: "解密内容",
-                result: [],
-                novels: []
+                aes: {
+                    iv: "123456789abcdefh",
+                    key:"",
+                    encodeKey:""
+                },
+                userInfo: {
+                    userId: "1",
+                    userName: "rstyro",
+                    age: 20,
+                    info: "信息内容......",
+                },
+                parameter: "",
+                encodeContent: "",
+                decodeContent: "",
+                finalDecodeContent: "",
+                result: ""
             },
             http: {
                 root: '/',
                 headers: {
                     loginToken: "asdb",
-                    from: "pc",
-                    uniqueToken: "",
-                    lang: "",
-                    version: "",
-                    equipmentId: "",
-                    fCurrency: "1"
                 }
             },
             methods: {
-                encode: function () {
-                    const encrypt = new JSEncrypt();
-                    // 设置公钥
-                    encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + this.rsa.publicKey + '-----END PUBLIC KEY-----');
-                    // encrypt.setPublicKey(this.rsa.publicKey);
-                    // 加密+base64
-                    this.encodeText = encrypt.encrypt(this.content);
-                    console.log("encode=", this.encodeText);
-
-                    // encrypt.setPublicKey(this.rsa.publicKey);
-                    var decode1 = encrypt.decrypt("VHDFaE/JtspKxfI1tB+JmADEpp1R+ZPngs8mne0YJJCx9ZyB/k/Qp6CflB9zYlmM2+E+0V1uwZm79/+Ej4KQ10LjRI2eTf6b6NvkrsZRJaJpc7d8PpBVQhA3d9hQRXnadPx/d/SzsiyVzSSuJ9CCtwJer15lTvJ9/J0oRQSKJVY=");
-                    console.log("decosw=",decode1);
-                    var decode2 = encrypt.decryptByPublic("VHDFaE/JtspKxfI1tB+JmADEpp1R+ZPngs8mne0YJJCx9ZyB/k/Qp6CflB9zYlmM2+E+0V1uwZm79/+Ej4KQ10LjRI2eTf6b6NvkrsZRJaJpc7d8PpBVQhA3d9hQRXnadPx/d/SzsiyVzSSuJ9CCtwJer15lTvJ9/J0oRQSKJVY=");
-                    console.log("decode=",decode2);
-                    var str = 'abcAAA'; // 加密内容
-                    var key = this.aesPwd; // 密钥
-                    var iv = '1234567890123456'; // 初始向量，不设置会随机生成(当然也就无法解密了)
-
-                    key = CryptoJS.enc.Utf8.parse(key); // **注意！如果引用了 jQuery 则需要加 "toString()"**
-                    iv = CryptoJS.enc.Utf8.parse(iv); // **同上，详见 [2]**
-
-                    var encrypted = CryptoJS.AES.encrypt(str, key, {
-                        iv: iv,
-                        mode: CryptoJS.mode.CBC,
-                        padding: CryptoJS.pad.Pkcs7
-                    });
-                    encrypted = encrypted.toString();
-                    console.log("encrypted=",encrypted);
-
-                    var decrypted = CryptoJS.AES.decrypt(encrypted, key, {
-                        iv: iv,
-                        mode: CryptoJS.mode.CBC,
-                        padding: CryptoJS.pad.Pkcs7
-                    });
-
-                    // 转换为 utf8 字符串
-                    decrypted = CryptoJS.enc.Utf8.stringify(decrypted);
-                    console.log("decrypted=",decrypted);
-
-                },
-                getApiData: function () {
-                    //发送get请求
-                    this.$http.get('http://172.16.1.16:9091/contract/market/symbols').then(function (res) {
-                        console.log("res:", res.body);
-                        var json = JSON.stringify(res.body);
-                        console.log("json:", json);
-                        this.novels = [];
-                        this.result = res.body.result;
-                    }, function () {
-                        console.log('请求失败处理');
-                    });
-                },
-                postRequest: function () {
-                    //发送 post 请求
-                    this.$http.post('https://www.apiopen.top/novelApi', {
-                        name: "参数1",
-                        url: "参数2"
-                    }, {emulateJSON: true}).then(function (res) {
-                        console.log("res:", res.body);
-                        this.result = [];
-                        this.novels = res.body.data;
-                    }, function (res) {
-                        console.log(res.status);
+                testRequest: function () {
+                    // 随机生成32位  aes 密钥
+                    this.aes.key=generateKey();
+                    // 参数转json 字符串
+                    this.parameter = JSON.stringify(this.userInfo);
+                    // aes 加密
+                    this.encodeContent = aesEncode(this.parameter,this.aes.iv,this.aes.key);
+                    // rsa 后端公钥加密aes密钥
+                    let encodeAesKey = rsaEncode(this.rsa.backPublicKey,this.aes.key);
+                    this.aes.encodeKey=encodeAesKey;
+                    axios.post('http://localhost:8800/test1', this.encodeContent,{
+                        headers: {
+                            "Content-Type": "application/json;charset=utf-8",
+                            key:encodeAesKey
+                        }
+                    }).then(function (response) {
+                        console.log("response:",response);
+                        vm.result=response.data;
+                        console.log("pk:",vm.rsa.publicKey);
+                        console.log("result:",vm.result);
+                        vm.decodeContent = rsaDecode(vm.rsa.mePrivateKey,vm.result);
+                        if(vm.decodeContent){
+                            let data = JSON.parse(vm.decodeContent);
+                            console.log("decodeContent:",data);
+                            console.log("vm.decodeContent.key:",data.key);
+                            const aesKey = rsaDecode(vm.rsa.mePrivateKey,data.key);
+                            console.log("aesKey:=",aesKey);
+                            console.log("data.data:=",data.data);
+                            vm.finalDecodeContent = aesDecode(data.data,vm.aes.iv,aesKey);
+                            console.log("vm.finalDecodeContent:",vm.finalDecodeContent);
+                        }
+                    }).catch(function (error) {
+                        console.log("error:",error);
                     });
                 }
             }
         });
     }
 
-    function encodeBase64(content) {
-        return btoa(content);
+    // aes 加密
+    function aesEncode(content,iv,aesKey){
+        iv = CryptoJS.enc.Utf8.parse(iv);
+        aesKey = CryptoJS.enc.Utf8.parse(aesKey);
+        let encrypted = CryptoJS.AES.encrypt(content, aesKey, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        return  encrypted.toString();
     }
 
-    function decodeBase64(content) {
-        return atob(content);
+    // aes 解密
+    function aesDecode(encrypted,iv,aesKey){
+        iv = CryptoJS.enc.Utf8.parse(iv);
+        aesKey = CryptoJS.enc.Utf8.parse(aesKey);
+        var decrypted = CryptoJS.AES.decrypt(encrypted, aesKey, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        // 转换为 utf8 字符串
+        return CryptoJS.enc.Utf8.stringify(decrypted);
     }
 
+    // rsa 公钥加密
+    function rsaEncode(publicKey,content){
+        // 加密+base64
+        const encrypt = new JSEncrypt();
+        // 设置公钥
+        encrypt.setPublicKey('-----BEGIN PUBLIC KEY-----' + publicKey + '-----END PUBLIC KEY-----');
+        return encrypt.encryptLong(content);
+    }
+
+    // rsa 私钥解密
+    function rsaDecode(privateKey,content){
+        // 加密+base64
+        const encrypt = new JSEncrypt();
+        encrypt.setPrivateKey(privateKey);
+        return encrypt.decryptLong(content);
+    }
+
+    //随机生成aes 密钥
+    function generateKey(){
+        return CryptoJS.lib.WordArray.random(128/8).toString();
+    }
 
 </script>
 </body>

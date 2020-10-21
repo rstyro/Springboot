@@ -1,23 +1,23 @@
 package top.lrshuai.encrypt.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import top.lrshuai.encrypt.annotation.Decode;
+import top.lrshuai.encrypt.annotation.Encrypt;
 import top.lrshuai.encrypt.constant.Result;
 import top.lrshuai.encrypt.dto.TestDto;
 
 /**
  * @author rstyro
  */
+@CrossOrigin(origins = "*")
 @Controller
-@Decode
 public class TestController {
 
 
-    @GetMapping("/test1")
+    @PostMapping("/test1")
     @ResponseBody
+    @Encrypt
     public Object test1(@RequestBody(required = false) TestDto dto){
         System.out.println("dto="+dto);
         return Result.ok(dto);

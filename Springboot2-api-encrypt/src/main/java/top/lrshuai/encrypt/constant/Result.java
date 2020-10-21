@@ -6,7 +6,6 @@ import java.util.Map;
 
 /**
  * 返回值model
- *
  * @author rstyro
  */
 public class Result extends HashMap<String, Object> {
@@ -83,5 +82,12 @@ public class Result extends HashMap<String, Object> {
     public Result put(String key, Object value) {
         super.put(key, value);
         return this;
+    }
+    public Object getData(){
+        return this.get(DATA);
+    }
+
+    public String  getKey(){
+        return (String) this.get(KEY);
     }
 }
