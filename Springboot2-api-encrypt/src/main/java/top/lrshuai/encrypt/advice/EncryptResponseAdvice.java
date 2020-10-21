@@ -1,6 +1,7 @@
 package top.lrshuai.encrypt.advice;
 
 import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -17,12 +18,11 @@ import top.lrshuai.encrypt.utils.Utils;
 import top.lrshuai.encryption.AesUtils;
 import top.lrshuai.encryption.RsaUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
-
 /**
+ * 接口返回对象加密
  * @author rstyro
  */
+@Slf4j
 @ControllerAdvice(basePackages = {"top.lrshuai.encrypt.controller"})
 public class EncryptResponseAdvice implements ResponseBodyAdvice<Object> {
 
@@ -35,6 +35,16 @@ public class EncryptResponseAdvice implements ResponseBodyAdvice<Object> {
         return true;
     }
 
+    /**
+     * 返回结果加密
+     * @param obj 接口返回的对象
+     * @param methodParameter method
+     * @param mediaType  mediaType
+     * @param aClass HttpMessageConverter class
+     * @param serverHttpRequest request
+     * @param serverHttpResponse response
+     * @return obj
+     */
     @Override
     public Object beforeBodyWrite(Object obj, MethodParameter methodParameter, MediaType mediaType, Class<? extends HttpMessageConverter<?>> aClass, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) {
         // 方法或类上有注解
@@ -48,18 +58,16 @@ public class EncryptResponseAdvice implements ResponseBodyAdvice<Object> {
                     Object data = ((Result) obj).getData();
                     // 3、转json字符串
                     String jsonString = JSON.toJSONString(data);
-                    // 4、aes加密
+                    // 4、aes加密数据体
                     String aesEncode = AesUtils.encodeBase64(jsonString, randomAesKey,keyConfig.getAesIv().getBytes(),AesUtils.CIPHER_MODE_CBC_PKCS5PADDING);
-                    // 5、放入data
+                    // 5、重新设置数据体
                     ((Result) obj).put(Result.DATA,aesEncode);
-                    // 6、aes密钥-使用前端的rsa公钥加密 返回给前端
+                    // 6、使用前端的rsa公钥加密 aes密钥 返回给前端
                     ((Result) obj).put(Result.KEY,RsaUtils.encodeBase64PublicKey(keyConfig.getFrontRsaPublicKey(),randomAesKey));
-                    // 7、result 最终转json,然后再次 rsa使用前端的rsa公钥 加密返回
+                    // 7、result rsa使用前端的rsa公钥加密 整个对象 返回
                     return RsaUtils.encodeBase64PublicKey(keyConfig.getFrontRsaPublicKey(), JSON.toJSONString(obj));
-                } catch (GeneralSecurityException | UnsupportedEncodingException e) {
-                    e.printStackTrace();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                   log.error("加密失败：",e);
                 }
             }
         }

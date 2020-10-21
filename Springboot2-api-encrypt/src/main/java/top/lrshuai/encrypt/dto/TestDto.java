@@ -1,14 +1,9 @@
 package top.lrshuai.encrypt.dto;
 
-import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import top.lrshuai.encrypt.constant.Result;
-import top.lrshuai.encryption.AesUtils;
 import top.lrshuai.encryption.RsaUtils;
-
-import java.util.Map;
 
 /**
  * @author rstyro

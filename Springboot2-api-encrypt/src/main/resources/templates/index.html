@@ -143,16 +143,14 @@
                     // rsa 后端公钥加密aes密钥
                     let encodeAesKey = rsaEncode(this.rsa.backPublicKey,this.aes.key);
                     this.aes.encodeKey=encodeAesKey;
+                    console.log("encodeAeskey:",this.aes.encodeKey);
                     axios.post('http://localhost:8800/test1', this.encodeContent,{
                         headers: {
                             "Content-Type": "application/json;charset=utf-8",
                             key:encodeAesKey
                         }
                     }).then(function (response) {
-                        console.log("response:",response);
                         vm.result=response.data;
-                        console.log("pk:",vm.rsa.publicKey);
-                        console.log("result:",vm.result);
                         vm.decodeContent = rsaDecode(vm.rsa.mePrivateKey,vm.result);
                         if(vm.decodeContent){
                             let data = JSON.parse(vm.decodeContent);
