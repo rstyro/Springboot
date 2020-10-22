@@ -60,7 +60,7 @@
         </tr>
         <tr class="double">
             <td>age:</td>
-            <td><input v-model="userInfo.age"></td>
+            <td><input type="number" v-model="userInfo.age"></td>
         </tr>
         <tr class="double">
             <td>info:</td>
@@ -74,12 +74,12 @@
                 <textarea v-model="aes.key" cols="50" rows="2" placeholder="AES密钥"></textarea>
             </td>
         </tr>
-        <tr class="double">
-            <td>AES向量:</td>
-            <td>
-                <textarea v-model="aes.iv" cols="50" rows="1" placeholder="向量的长度为16位"></textarea>
-            </td>
-        </tr>
+<!--        <tr class="double">-->
+<!--            <td>AES向量:</td>-->
+<!--            <td>-->
+<!--                <textarea v-model="aes.iv" cols="50" rows="1" placeholder="向量的长度为16位"></textarea>-->
+<!--            </td>-->
+<!--        </tr>-->
     </table>
     <button @click="testRequest">发送测试请求</button>
     <br>
@@ -87,9 +87,10 @@
         <p>要发送的数据：<span>{{parameter}}</span></p>
         <p>加密后的数据：{{encodeContent}}</p>
         <br>
-        <p>收到服务端的内容：{{result}}</p>
-        <p>解密服务端的内容：{{decodeContent}}</p>
-        <p>最终拿到服务端的内容：{{finalDecodeContent}}</p>
+        <h3>数据返回：</h3>
+        <p>收到服务端的内容：<p>{{result}}</p></p>
+        <p>解密服务端AES密钥内容：<p>{{decodeAes}}</p></p>
+        <p>最终拿到服务端的内容：<p>{{decodeContent}}</p></p>
 
     </div>
 </div>
@@ -123,7 +124,7 @@
                 parameter: "",
                 encodeContent: "",
                 decodeContent: "",
-                finalDecodeContent: "",
+                decodeAes: "",
                 result: ""
             },
             http: {
@@ -150,18 +151,13 @@
                             key:encodeAesKey
                         }
                     }).then(function (response) {
+                        console.log("response:",response);
+                        // 1、服务端返回的数据
                         vm.result=response.data;
-                        vm.decodeContent = rsaDecode(vm.rsa.mePrivateKey,vm.result);
-                        if(vm.decodeContent){
-                            let data = JSON.parse(vm.decodeContent);
-                            console.log("decodeContent:",data);
-                            console.log("vm.decodeContent.key:",data.key);
-                            const aesKey = rsaDecode(vm.rsa.mePrivateKey,data.key);
-                            console.log("aesKey:=",aesKey);
-                            console.log("data.data:=",data.data);
-                            vm.finalDecodeContent = aesDecode(data.data,vm.aes.iv,aesKey);
-                            console.log("vm.finalDecodeContent:",vm.finalDecodeContent);
-                        }
+                        // 2、rsa 解密拿到aes密钥
+                        vm.decodeAes = rsaDecode(vm.rsa.mePrivateKey,vm.result.key);
+                        // 3、aes 解密
+                        vm.decodeContent = aesDecode(vm.result.data,vm.aes.iv,vm.decodeAes);
                     }).catch(function (error) {
                         console.log("error:",error);
                     });

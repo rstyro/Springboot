@@ -64,8 +64,8 @@ public class EncryptResponseAdvice implements ResponseBodyAdvice<Object> {
                     ((Result) obj).put(Result.DATA,aesEncode);
                     // 6、使用前端的rsa公钥加密 aes密钥 返回给前端
                     ((Result) obj).put(Result.KEY,RsaUtils.encodeBase64PublicKey(keyConfig.getFrontRsaPublicKey(),randomAesKey));
-                    // 7、result rsa使用前端的rsa公钥加密 整个对象 返回
-                    return RsaUtils.encodeBase64PublicKey(keyConfig.getFrontRsaPublicKey(), JSON.toJSONString(obj));
+                    // 7、返回
+                    return obj;
                 } catch (Exception e) {
                    log.error("加密失败：",e);
                 }
