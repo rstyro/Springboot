@@ -21,4 +21,6 @@
 - [SpringBoot2-JWT](https://rstyro.github.io/blog/2019/04/16/SpringBoot-JWT/) *Springboot jwt ,JSON Web Token*
 - [SpringBoot2-Google-Check](https://rstyro.github.io/blog/2019/04/29/SpringBoot-Google%E4%BA%8C%E6%AD%A5%E9%AA%8C%E8%AF%81/) *Springboot Google 二步验证*
 - [SpringBoot2-Redisson](https://rstyro.github.io/blog/2019/06/25/SpringBoot2%E4%B8%8ERedisson%E7%A2%B0%E6%92%9E/) *SpringBoot 与Redisson 整合之分布式锁与发布订阅*
+- [SpringBoot2-RedisCacheManager](https://rstyro.github.io/blog/2019/04/16/SpringBoot%E4%B8%8ERedisCacheManager%E6%95%B4%E5%90%88/) *SpringBoot 与RedisCacheManager整合*
+- [Springboot2-api-encrypt](https://rstyro.github.io/blog/2020/10/22/Springboot2接口加解密全过程详解(含前端代码)/) *SpringBoot接口RSA+AES加解密(含前端代码)*
 - ...持续更新
