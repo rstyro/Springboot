@@ -196,4 +196,24 @@ public class QuartzController {
         }
         return Result.ok();
     }
+
+    /**
+     * 修改 一个job的 时间表达式
+     *
+     * @param jobName
+     * @param jobGroupName
+     * @param jobTime
+     */
+    public void updateJob(String jobName, String jobGroupName, String jobTime) {
+        try {
+            TriggerKey triggerKey = TriggerKey.triggerKey(jobName, jobGroupName);
+            CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
+            trigger = trigger.getTriggerBuilder().withIdentity(triggerKey)
+                    .withSchedule(CronScheduleBuilder.cronSchedule(jobTime)).build();
+            // 重启触发器
+            scheduler.rescheduleJob(triggerKey, trigger);
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
+    }
 }
