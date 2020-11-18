@@ -2847,7 +2847,8 @@ function pkcs1pad1(s, n) {
 }
 // PKCS#1 (type 2, random) pad input string s to n bytes, and return a bigint
 function pkcs1pad2(s, n) {
-    if (n < s.length + 11) { // TODO: fix for utf-8
+    if (n < s.length + 11) {
+        // TODO: fix for utf-8
         console.error("Message too long for RSA");
         return null;
     }
@@ -2855,10 +2856,11 @@ function pkcs1pad2(s, n) {
     var i = s.length - 1;
     while (i >= 0 && n > 0) {
         var c = s.charCodeAt(i--);
-        if (c < 128) { // encode using utf-8
+        if (c < 128) {
+            // encode using utf-8
             ba[--n] = c;
         }
-        else if ((c > 127) && (c < 2048)) {
+        else if (c > 127 && c < 2048) {
             ba[--n] = (c & 63) | 128;
             ba[--n] = (c >> 6) | 192;
         }
@@ -2871,7 +2873,8 @@ function pkcs1pad2(s, n) {
     ba[--n] = 0;
     var rng = new SecureRandom();
     var x = [];
-    while (n > 2) { // random non-zero pad
+    while (n > 2) {
+        // random non-zero pad
         x[0] = 0;
         while (x[0] == 0) {
             rng.nextBytes(x);
@@ -2913,7 +2916,12 @@ var RSAKey = /** @class */ (function () {
         while (xp.compareTo(xq) < 0) {
             xp = xp.add(this.p);
         }
-        return xp.subtract(xq).multiply(this.coeff).mod(this.p).multiply(this.q).add(xq);
+        return xp
+            .subtract(xq)
+            .multiply(this.coeff)
+            .mod(this.p)
+            .multiply(this.q)
+            .add(xq);
     };
     //#endregion PROTECTED
     //#region PUBLIC
@@ -2945,6 +2953,58 @@ var RSAKey = /** @class */ (function () {
         }
         else {
             return "0" + h;
+        }
+    };
+    /**
+     * 长文本加密
+     * @param {string} string 待加密长文本
+     * @returns {string} 加密后的base64编码
+     */
+    RSAKey.prototype.encryptLong = function (text) {
+        var _this = this;
+        var maxLength = ((this.n.bitLength() + 7) >> 3) - 11;
+        try {
+            var ct_1 = "";
+            if (text.length > maxLength) {
+                var lt = text.match(/.{1,117}/g);
+                lt.forEach(function (entry) {
+                    var t1 = _this.encrypt(entry);
+                    ct_1 += t1;
+                });
+                return hex2b64(ct_1);
+            }
+            var t = this.encrypt(text);
+            var y = hex2b64(t);
+            return y;
+        }
+        catch (ex) {
+            return false;
+        }
+    };
+    /**
+     * 长文本解密
+     * @param {string} string 加密后的base64编码
+     * @returns {string} 解密后的原文
+     */
+    RSAKey.prototype.decryptLong = function (text) {
+        var _this = this;
+        var maxLength = (this.n.bitLength() + 7) >> 3;
+        text = b64tohex(text);
+        try {
+            if (text.length > maxLength) {
+                var ct_2 = "";
+                var lt = text.match(/.{1,256}/g); // 128位解密。取256位
+                lt.forEach(function (entry) {
+                    var t1 = _this.decrypt(entry);
+                    ct_2 += t1;
+                });
+                return ct_2;
+            }
+            var y = this.decrypt(text);
+            return y;
+        }
+        catch (ex) {
+            return false;
         }
     };
     // RSAKey.prototype.setPrivate = RSASetPrivate;
@@ -2986,13 +3046,21 @@ var RSAKey = /** @class */ (function () {
         for (;;) {
             for (;;) {
                 this.p = new BigInteger(B - qs, 1, rng);
-                if (this.p.subtract(BigInteger.ONE).gcd(ee).compareTo(BigInteger.ONE) == 0 && this.p.isProbablePrime(10)) {
+                if (this.p
+                    .subtract(BigInteger.ONE)
+                    .gcd(ee)
+                    .compareTo(BigInteger.ONE) == 0 &&
+                    this.p.isProbablePrime(10)) {
                     break;
                 }
             }
             for (;;) {
                 this.q = new BigInteger(qs, 1, rng);
-                if (this.q.subtract(BigInteger.ONE).gcd(ee).compareTo(BigInteger.ONE) == 0 && this.q.isProbablePrime(10)) {
+                if (this.q
+                    .subtract(BigInteger.ONE)
+                    .gcd(ee)
+                    .compareTo(BigInteger.ONE) == 0 &&
+                    this.q.isProbablePrime(10)) {
                     break;
                 }
             }
@@ -3025,15 +3093,6 @@ var RSAKey = /** @class */ (function () {
         }
         return pkcs1unpad2(m, (this.n.bitLength() + 7) >> 3);
     };
-
-    RSAKey.prototype.decryptByPublic = function (ctext) {
-        var c = parseBigInt(ctext, 16);
-        var m = this.doPublic(c);
-        if (m == null) {
-            return null;
-        }
-        return pkcs1unpad2(m, (this.n.bitLength() + 7) >> 3);
-    };
     // Generate a new random private key B bits long, using public expt E
     RSAKey.prototype.generateAsync = function (B, E, callback) {
         var rng = new SecureRandom();
@@ -3059,7 +3118,9 @@ var RSAKey = /** @class */ (function () {
                     rsa.dmp1 = rsa.d.mod(p1);
                     rsa.dmq1 = rsa.d.mod(q1);
                     rsa.coeff = rsa.q.modInverse(rsa.p);
-                    setTimeout(function () { callback(); }, 0); // escape
+                    setTimeout(function () {
+                        callback();
+                    }, 0); // escape
                 }
                 else {
                     setTimeout(loop1, 0);
@@ -3133,10 +3194,9 @@ function pkcs1unpad2(d, n) {
     while (i < b.length && b[i] == 0) {
         ++i;
     }
-    // 这里不判断长度了
-    // if (b.length - i != n - 1 || b[i] != 2) {
-    //     return null;
-    // }
+    if (b.length - i != n - 1 || b[i] != 2) {
+        return null;
+    }
     ++i;
     while (b[i] != 0) {
         if (++i >= b.length) {
@@ -3146,10 +3206,11 @@ function pkcs1unpad2(d, n) {
     var ret = "";
     while (++i < b.length) {
         var c = b[i] & 255;
-        if (c < 128) { // utf-8 decode
+        if (c < 128) {
+            // utf-8 decode
             ret += String.fromCharCode(c);
         }
-        else if ((c > 191) && (c < 224)) {
+        else if (c > 191 && c < 224) {
             ret += String.fromCharCode(((c & 31) << 6) | (b[i + 1] & 63));
             ++i;
         }
@@ -3169,7 +3230,7 @@ var DIGEST_HEADERS = {
     sha256: "3031300d060960864801650304020105000420",
     sha384: "3041300d060960864801650304020205000430",
     sha512: "3051300d060960864801650304020305000440",
-    ripemd160: "3021300906052b2403020105000414",
+    ripemd160: "3021300906052b2403020105000414"
 };
 function getDigestHeader(name) {
     return DIGEST_HEADERS[name] || "";
@@ -5077,10 +5138,7 @@ var JSEncryptRSAKey = /** @class */ (function (_super) {
             hex: "00" + second_sequence.getEncodedHex()
         });
         var seq = new KJUR.asn1.DERSequence({
-            array: [
-                first_sequence,
-                bit_string
-            ]
+            array: [first_sequence, bit_string]
         });
         return seq.getEncodedHex();
     };
@@ -5143,8 +5201,7 @@ var JSEncryptRSAKey = /** @class */ (function (_super) {
      */
     JSEncryptRSAKey.hasPublicKeyProperty = function (obj) {
         obj = obj || {};
-        return (obj.hasOwnProperty("n") &&
-            obj.hasOwnProperty("e"));
+        return obj.hasOwnProperty("n") && obj.hasOwnProperty("e");
     };
     /**
      * Check if the object contains ALL the parameters of an RSA key.
@@ -5253,16 +5310,6 @@ var JSEncrypt = /** @class */ (function () {
             return false;
         }
     };
-
-    JSEncrypt.prototype.decryptByPublic = function (str) {
-        // Return the decrypted string.
-        try {
-            return this.getKey().decryptByPublic(b64tohex(str));
-        }
-        catch (ex) {
-            return false;
-        }
-    };
     /**
      * Proxy method for RSAKey object's encrypt, encrypt the string using the public
      * components of the rsa key object. Note that if the object was not set will be created
@@ -5275,6 +5322,50 @@ var JSEncrypt = /** @class */ (function () {
         // Return the encrypted string.
         try {
             return hex2b64(this.getKey().encrypt(str));
+        }
+        catch (ex) {
+            return false;
+        }
+    };
+    /**
+     * 分段加密长字符串
+     * @param {string} str the string to encrypt
+     * @return {string} the encrypted string encoded in base64
+     * @public
+     */
+    JSEncrypt.prototype.encryptLong = function (str) {
+        try {
+            var encrypted = this.getKey().encryptLong(str) || "";
+            var uncrypted = this.getKey().decryptLong(encrypted) || "";
+            var count = 0;
+            var reg = /null$/g;
+            while (reg.test(uncrypted)) {
+                // 如果加密出错，重新加密
+                count++;
+                encrypted = this.getKey().encryptLong(str) || "";
+                uncrypted = this.getKey().decryptLong(encrypted) || "";
+                // console.log('加密出错次数', count)
+                if (count > 10) {
+                    // 重复加密不能大于10次
+                    // console.log('加密次数过多')
+                    break;
+                }
+            }
+            return encrypted;
+        }
+        catch (ex) {
+            return false;
+        }
+    };
+    /**
+     * 分段解密长字符串
+     * @param {string} str base64 encoded crypted string to decrypt
+     * @return {string} the decrypted string
+     * @public
+     */
+    JSEncrypt.prototype.decryptLong = function (str) {
+        try {
+            return this.getKey().decryptLong(str);
         }
         catch (ex) {
             return false;
@@ -5376,7 +5467,7 @@ var JSEncrypt = /** @class */ (function () {
         // Return the private representation of this key.
         return this.getKey().getPublicBaseKeyB64();
     };
-    JSEncrypt.version = "3.0.0-rc.1";
+    JSEncrypt.version = "3.1.2";
     return JSEncrypt;
 }());
 

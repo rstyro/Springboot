@@ -10,11 +10,29 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KeyConfig {
 
+    /**
+     * rsa 公钥
+     */
     @Value("${api.encrypt.rsa.publicKey}")
     private String rsaPublicKey;
 
+    /**
+     * rsa 私钥
+     */
     @Value("${api.encrypt.rsa.privateKey}")
     private String rsaPrivateKey;
+
+    /**
+     * 前端rsa 公钥
+     */
+    @Value("${api.encrypt.rsa.frontPublicKey}")
+    private String frontRsaPublicKey;
+
+    /**
+     * aes向量 16位
+     */
+    @Value("${api.encrypt.aes.iv}")
+    private String aesIv;
 
     public String getRsaPrivateKey() {
         return rsaPrivateKey;
@@ -24,4 +42,11 @@ public class KeyConfig {
         return rsaPublicKey;
     }
 
+    public String getFrontRsaPublicKey() {
+        return frontRsaPublicKey;
+    }
+
+    public String getAesIv() {
+        return aesIv;
+    }
 }

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * 解码处理
  * @author rstyro
  */
 @Slf4j
@@ -32,14 +33,14 @@ public class DecodeInputMessage implements HttpInputMessage {
             encodeAesKey = keys.get(0);
         }
         try {
+            // 1、解码得到aes 密钥
             String decodeAesKey = RsaUtils.decodeBase64ByPrivate(keyConfig.getRsaPrivateKey(), encodeAesKey);
-            System.out.println("decodeKey=" + decodeAesKey);
-            InputStream body = httpInputMessage.getBody();
+            // 2、从inputStreamReader 得到aes 加密的内容
             String encodeAesContent = new BufferedReader(new InputStreamReader(httpInputMessage.getBody())).lines().collect(Collectors.joining(System.lineSeparator()));
-            System.out.println("encodeAesContent=" + encodeAesContent);
-            String aesDecode = AesUtils.decodeBase64(encodeAesContent, decodeAesKey);
-            System.out.println("aesDecode=" + aesDecode);
+            // 3、AES通过密钥CBC解码
+            String aesDecode = AesUtils.decodeBase64(encodeAesContent, decodeAesKey, keyConfig.getAesIv().getBytes(), AesUtils.CIPHER_MODE_CBC_PKCS5PADDING);
             if (!StringUtils.isEmpty(aesDecode)) {
+                // 4、重新写入到controller
                 this.body = new ByteArrayInputStream(aesDecode.getBytes());
             }
         } catch (Exception e) {

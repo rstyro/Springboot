@@ -12,10 +12,10 @@ import top.lrshuai.encrypt.config.KeyConfig;
 import top.lrshuai.encrypt.utils.Utils;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
+ * 请求参数到controller之前的处理
  * @author rstyro
  */
 @ControllerAdvice(basePackages = {"top.lrshuai.encrypt.controller"})
@@ -24,6 +24,9 @@ public class EncryptRequestAdvice implements RequestBodyAdvice {
     @Autowired
     private KeyConfig keyConfig;
 
+    /**
+     * 是否需要解码
+     */
     private boolean isDecode;
 
     @Override

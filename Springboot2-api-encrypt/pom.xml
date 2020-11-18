@@ -35,10 +35,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>top.lrshuai.encryption</groupId>
             <artifactId>encryption-tools</artifactId>
-            <version>1.0.4</version>
+            <version>1.0.3</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
