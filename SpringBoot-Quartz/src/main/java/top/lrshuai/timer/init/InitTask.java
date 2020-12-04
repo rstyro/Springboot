@@ -14,7 +14,7 @@ import top.lrshuai.timer.task.service.IQuartzService;
 import java.time.LocalDateTime;
 
 
-@Component
+//@Component
 public class InitTask implements ApplicationRunner {
 	private final static Logger LOGGER = LoggerFactory.getLogger(InitTask.class);
 

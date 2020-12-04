@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import top.lrshuai.timer.common.constant.ApiResultEnum;
 import top.lrshuai.timer.common.constant.Result;
+import top.lrshuai.timer.job.HelloJob;
+import top.lrshuai.timer.job.JobService;
 import top.lrshuai.timer.task.entity.JobStatus;
 import top.lrshuai.timer.task.entity.Quartz;
 import top.lrshuai.timer.task.entity.QuartzDTO;
@@ -18,6 +20,7 @@ import top.lrshuai.timer.task.service.IQuartzService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +42,9 @@ public class QuartzController {
 
     @Autowired
     private IQuartzService quartzService;
+
+    @Autowired
+    private JobService jobService;
 
     @PostMapping("/add")
     public Result save(Quartz quartz){
@@ -64,7 +70,8 @@ public class QuartzController {
     @GetMapping("/list")
     public Result list(QuartzDTO dto){
         LOGGER.info("任务列表");
-        return Result.ok(quartzService.getQuartzPage(dto));
+//        return Result.ok(quartzService.getQuartzPage(dto));
+        return Result.ok();
     }
 
     @PostMapping("/start")
@@ -128,7 +135,8 @@ public class QuartzController {
     @GetMapping(value="/query")
     @ResponseBody
     public Result query(Long id) throws Exception {
-        return quartzService.getDetail(id);
+//        return quartzService.getDetail(id);
+        return Result.ok();
     }
 
     @PostMapping("/trigger")
@@ -216,4 +224,14 @@ public class QuartzController {
             e.printStackTrace();
         }
     }
+
+    @GetMapping("/test")
+    public Result testFire() throws SchedulerException, InterruptedException {
+        String key="test";
+        jobService.deleteJob(key,key);
+        Thread.sleep(2000);
+        jobService.addJob(HelloJob.class,key,key,3,2,null);
+        return Result.ok();
+    }
+
 }
