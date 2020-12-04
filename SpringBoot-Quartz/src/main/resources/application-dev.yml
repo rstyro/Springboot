@@ -3,11 +3,7 @@ server:
   max-http-header-size: 10000000
   tomcat:
     max-http-post-size: -1
-mybatis-plus:
-  mapper-locations:
-  - classpath:mapper/*/*.xml
-  - classpath*:mapper/*/*/*.xml
-  type-aliases-package: top.lrhuai.timer.*.entity
+
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/quartz?serverTimezone=GMT&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
@@ -65,9 +61,3 @@ spring:
             threadPriority: 5
             threadsInheritContextClassLoaderOfInitializingThread: true
 
-  thymeleaf:
-    mode: LEGACYHTML5
-    encoding: UTF-8
-    cache: false
-    servlet:
-      content-type: text/html

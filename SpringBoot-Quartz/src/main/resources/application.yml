@@ -1,3 +1,15 @@
 spring:
   profiles:
     active: dev
+  thymeleaf:
+    mode: LEGACYHTML5
+    encoding: UTF-8
+    cache: false
+    servlet:
+      content-type: text/html
+
+mybatis-plus:
+  mapper-locations:
+    - classpath:mapper/*/*.xml
+    - classpath*:mapper/*/*/*.xml
+  type-aliases-package: top.lrhuai.timer.*.entity
