@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.rstyro.shiro.sys.mapper.UserRoleMapper">
+
+    <select id="getRoleByUserId" resultType="top.rstyro.shiro.sys.entity.Role">
+        select a.* from role a
+        LEFT JOIN
+        user_role b
+        on
+        b.role_id=a.id
+        where
+            b.user_id=#{userId}
+    </select>
+</mapper>
