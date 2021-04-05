@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+<meta charset="UTF-8"/>
+<title>index</title>
+</head>
+<body>
+<h1 th:text="${title}">首页</h1>
+<h2>Hello <shiro:principal property="username" ></shiro:principal></h2>
+<br/>
+<br/>
+<br/>
+<br/>
+<h4>首页内容</h4>
+<a th:href="@{/user/list}">用户列表</a>
+
+<h2>首页内容</h2>
+<p shiro:hasRole="rstyro"  href="#">rstyro专属内容</p><!-- 拥有该角色 --><br/>
+<p shiro:hasAnyRoles="admin,rstyro" href="#">有admin或rstyro角色即可显示</p><br/>
+<!--验证当前用户是否拥有指定权限。  -->
+<p shiro:hasPermission="user:add"  >添加用户</p><br/>
+<!-- 与hasPermission标签逻辑相反，当前用户没有制定权限时，验证通过。 -->
+<p shiro:lacksPermission="user:del"> Sorry, you are not allowed to delete user accounts.</p><br/>
+<!-- 验证当前用户是否拥有以下权限资源。 -->
+<p shiro:hasAllPermissions="user:query, user:add">你拥有查询和添加权限</p><br/>
+<!-- 验证当前用户是否拥有以下任意一个权限。  -->
+<p shiro:hasAnyPermissions="user:query, user:del">你至少拥有查看和删除权限</p><br/>
+<p shiro:hasPermission="rstyro"  > 你拥有 rstyro 权限</p><br/>
+
+
+</body>
+</html>

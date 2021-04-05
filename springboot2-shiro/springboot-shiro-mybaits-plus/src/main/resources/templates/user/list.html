@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+<meta charset="UTF-8"/>
+<title>list</title>
+</head>
+<body>
+<h1>user list page</h1>
+<a shiro:hasAllPermissions="user:add"  th:href="@{/user/add}">添加</a>|
+<a shiro:hasPermission="user:edit" th:href="@{/user/edit}">修改</a>|
+<!-- 下面这个没写shiro标签-->
+<a th:href="@{/user/del}">删除</a>|
+</body>
+</html>

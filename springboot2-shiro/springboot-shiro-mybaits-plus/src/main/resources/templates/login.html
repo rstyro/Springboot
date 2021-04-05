@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+<meta charset="UTF-8"/>
+<title>登陆页面</title>
+</head>
+<body>
+<form th:action="@{/login}" method="post">
+    用户名:<input type="text" name="username" > <br/>
+    密码  : <input type="text" name="password"> <br>
+    <input type="submit" value="登录">
+    <p th:text="${msg}" style="color: red"></p>
+</form>
+</body>
+</html>
