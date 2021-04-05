@@ -7,7 +7,7 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import top.rstyro.shiro.shiro.RedisSessionDAO;
+import top.rstyro.shiro.shiro.session.RedisSessionDAO;
 import top.rstyro.shiro.sys.entity.User;
 import top.rstyro.shiro.utils.ApplicationContextUtils;
 

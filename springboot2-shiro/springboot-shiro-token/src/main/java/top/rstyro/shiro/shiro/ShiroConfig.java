@@ -6,6 +6,10 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import top.rstyro.shiro.shiro.session.MySessionListener;
+import top.rstyro.shiro.shiro.session.RedisSessionDAO;
+import top.rstyro.shiro.shiro.session.ShiroSessionIdGenerator;
+import top.rstyro.shiro.shiro.session.TokenSessionManager;
 
 import javax.servlet.Filter;
 import java.util.*;

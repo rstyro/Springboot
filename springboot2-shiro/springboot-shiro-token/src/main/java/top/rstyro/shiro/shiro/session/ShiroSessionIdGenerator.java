@@ -1,4 +1,4 @@
-package top.rstyro.shiro.shiro;
+package top.rstyro.shiro.shiro.session;
 
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.eis.SessionIdGenerator;
