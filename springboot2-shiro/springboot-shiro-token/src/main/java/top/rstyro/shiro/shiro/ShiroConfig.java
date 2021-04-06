@@ -6,6 +6,7 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import top.rstyro.shiro.commons.Consts;
 import top.rstyro.shiro.shiro.session.MySessionListener;
 import top.rstyro.shiro.shiro.session.RedisSessionDAO;
 import top.rstyro.shiro.shiro.session.ShiroSessionIdGenerator;
@@ -41,7 +42,9 @@ public class ShiroConfig {
         return shiroFilterFactoryBean;
     }
 
-    //2.创建安全管理器
+    /**
+     * 创建 默认的安全管理器
+     */
     @Bean
     public DefaultWebSecurityManager getDefaultWebSecurityManager(CustomerRealm customerRealm) {
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
@@ -53,22 +56,29 @@ public class ShiroConfig {
     }
 
 
-    //3.创建自定义realm
+    /**
+     * 自定义 realm
+     * @return
+     */
     @Bean
     public CustomerRealm customerRealm() {
         CustomerRealm customerRealm = new CustomerRealm();
         customerRealm.setCacheManager(new ShiroRedisCacheManager());
         customerRealm.setCachingEnabled(true);
-        // 认证
+        // 认证缓存
         customerRealm.setAuthenticationCachingEnabled(true);
-        customerRealm.setAuthenticationCacheName("shiro_authentication_cache");
-        // 授权
+        customerRealm.setAuthenticationCacheName(Consts.SHIRO_AUTHENTICATION_CACHE);
+        // 授权缓存
         customerRealm.setAuthorizationCachingEnabled(true);
-        customerRealm.setAuthorizationCacheName("shiro_authorization_cache");
+        customerRealm.setAuthorizationCacheName(Consts.SHIRO_AUTHORIZATION_CACHE);
         return customerRealm;
     }
 
 
+    /**
+     * 自定义 session 管理器
+     * @return
+     */
     @Bean
     public SessionManager sessionManager() {
         // 自定义session 从header 取 token 当作session会话
@@ -76,7 +86,7 @@ public class ShiroConfig {
         //设置redisSessionDao
         sessionManager.setSessionDAO(redisSessionDAO());
         // 时间单位 毫秒
-        sessionManager.setGlobalSessionTimeout(1000 * 60 * 1);
+        sessionManager.setGlobalSessionTimeout(Consts.TOKEN_TIME_OUT);
         // 调用sessionDAO doDelete方法
         sessionManager.setDeleteInvalidSessions(true);
 
@@ -85,6 +95,7 @@ public class ShiroConfig {
         //禁用会话id重写
         sessionManager.setSessionIdUrlRewritingEnabled(false);
 
+        // session监听
         Collection<SessionListener> listeners = new ArrayList<>();
         listeners.add(mySessionListener());
         sessionManager.setSessionListeners(listeners);

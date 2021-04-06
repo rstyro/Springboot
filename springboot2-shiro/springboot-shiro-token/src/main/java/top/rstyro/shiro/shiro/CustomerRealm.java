@@ -1,15 +1,21 @@
 package top.rstyro.shiro.shiro;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.cache.Cache;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.Subject;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.ObjectUtils;
+import top.rstyro.shiro.commons.Consts;
 import top.rstyro.shiro.shiro.uitls.ShiroUtils;
 import top.rstyro.shiro.sys.entity.Menu;
 import top.rstyro.shiro.sys.entity.Role;
@@ -19,7 +25,9 @@ import top.rstyro.shiro.sys.service.IUserRoleService;
 import top.rstyro.shiro.sys.service.IUserService;
 import top.rstyro.shiro.utils.ApplicationContextUtils;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -92,8 +100,14 @@ public class CustomerRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         String loginToken = (String) token.getPrincipal();
         System.out.println("loginToken="+loginToken);
-        IUserService userService=  ApplicationContextUtils.getBean(IUserService.class);
-        User user = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getToken, loginToken));
+        RedisTemplate redisTemplate=  ApplicationContextUtils.getBean(RedisTemplate.class);
+        User user = (User) redisTemplate.opsForValue().get(loginToken);
+        System.out.println("user="+user);
+//        IUserService userService=  ApplicationContextUtils.getBean(IUserService.class);
+//        User user = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getToken, loginToken));
+//        Subject subject = SecurityUtils.getSubject();
+//        System.out.println("suject="+subject);
+//        System.out.println("suject.session="+subject.getSession());
         if(user!=null){
             // 密码放入数据库的密码 和 登陆传上来的比较（shiro帮我们处理）
             SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(user,token.getCredentials(),this.getName());
@@ -121,5 +135,35 @@ public class CustomerRealm extends AuthorizingRealm {
     public boolean hasRole(PrincipalCollection principals, String roleIdentifier) {
         User user = (User)principals.getPrimaryPrincipal();
         return "admin".equals(user.getUsername()) || super.hasRole(principals, roleIdentifier);
+    }
+
+    /**
+     * 清空已经放入缓存的认证信息。
+     * */
+    @Override
+    protected void clearCache(PrincipalCollection principals) {
+        System.out.println("自定义 realm clearCache");
+        System.out.println("principals="+JSON.toJSONString(principals));
+        System.out.println("principals="+JSON.toJSONString(principals));
+        ShiroRedisCache cache = (ShiroRedisCache) this.getCacheManager().getCache(Consts.SHIRO_AUTHENTICATION_CACHE);
+        System.out.println("cache="+JSON.toJSONString(cache.size()));
+        System.out.println("cache="+JSON.toJSONString(cache.keys()));
+        System.out.println("cache="+JSON.toJSONString(cache.values()));
+        User user = (User) principals.getPrimaryPrincipal();
+        // 清除旧的认证缓存
+        if(cache != null&& cache.size()>0){
+            Iterator<String> iterator = cache.keys().iterator();
+            while (iterator.hasNext()) {
+                String key = iterator.next();
+                if(user.getToken().equals(key)){
+                    cache.remove(key);
+                    break;
+                }
+            }
+        }
+
+        this.getCacheManager().getCache(Consts.SHIRO_AUTHORIZATION_CACHE).remove(principals);
+
+        super.clearCache(principals);
     }
 }

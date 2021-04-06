@@ -28,7 +28,7 @@ public class CustomerRealm extends AuthorizingRealm {
 
 
     // 不能@Autowired这样注入，这样会导致事务不生效的。可以通过ApplicationContextUtils.getBean("beanName") 获取
-    // 这里不改了，可以测试事务的接口：/sys/user-role/test
+    // 这里不改了，可以测试事务不会滚的接口：/sys/user-role/test
     @Autowired
     private IUserService userService;
 

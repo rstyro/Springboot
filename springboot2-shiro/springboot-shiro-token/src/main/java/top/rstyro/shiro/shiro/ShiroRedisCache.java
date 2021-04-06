@@ -8,6 +8,11 @@ import top.rstyro.shiro.utils.ApplicationContextUtils;
 import java.util.Collection;
 import java.util.Set;
 
+/**
+ * shiro之 redis 缓存
+ * @param <K>
+ * @param <V>
+ */
 public class ShiroRedisCache<K,V> implements Cache<K,V> {
 
     private String cacheName;
