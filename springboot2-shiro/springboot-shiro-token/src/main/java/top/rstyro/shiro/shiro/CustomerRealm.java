@@ -100,8 +100,8 @@ public class CustomerRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         String loginToken = (String) token.getPrincipal();
         System.out.println("loginToken="+loginToken);
-        RedisTemplate redisTemplate=  ApplicationContextUtils.getBean(RedisTemplate.class);
-        User user = (User) redisTemplate.opsForValue().get(loginToken);
+        RedisTemplate redisTemplate=  ApplicationContextUtils.getBean("redisTemplate",RedisTemplate.class);
+        User user = (User) redisTemplate.opsForValue().get(Consts.REDIS_TOKEN_KEY_PREFIX+loginToken);
         System.out.println("user="+user);
 //        IUserService userService=  ApplicationContextUtils.getBean(IUserService.class);
 //        User user = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getToken, loginToken));

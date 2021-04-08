@@ -9,6 +9,7 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ public class IndexController {
 //	private ITestService testService;
 
 	@Autowired
+	@Qualifier("redisTemplate")
 	private RedisTemplate<String,Object> redisTemplate;
 
 	@RequestMapping("/")
@@ -57,7 +59,7 @@ public class IndexController {
 			// 各种校验通过之后，进行shiro登陆认证
 			String token = IdUtils.simpleUUID();
 			// 保存token到数据库，可以不用保存数据库直接redis也可以,这个token只是为了 realm校验用，而不返回给前端
-			redisTemplate.opsForValue().set(token,currentUser, Consts.TOKEN_TIME_OUT, TimeUnit.MILLISECONDS);
+			redisTemplate.opsForValue().set(Consts.REDIS_TOKEN_KEY_PREFIX+token,currentUser, Consts.TOKEN_TIME_OUT, TimeUnit.MILLISECONDS);
 			// shiro 认证
 			subject.login(new CustomerToken(token));
 			// session ID 当作token

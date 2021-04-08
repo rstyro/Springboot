@@ -9,6 +9,10 @@ public class Consts {
      */
     public static final String TOKEN = "authority";
     /**
+     * 存入redis的token 前缀
+     */
+    public static final String REDIS_TOKEN_KEY_PREFIX = "login_token_";
+    /**
      * milliseconds：毫秒
      */
     public static final long TOKEN_TIME_OUT = 1000 * 60 * 1;

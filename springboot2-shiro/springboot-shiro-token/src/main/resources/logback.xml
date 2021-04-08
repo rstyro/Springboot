@@ -41,9 +41,16 @@
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <!-- 日志文件名格式 -->
       <fileNamePattern>info.%d{yyyy-MM-dd}.log</fileNamePattern>
-      <!-- 最大保存时间：30天-->
-      <maxHistory>30</maxHistory>
+      <!--10天的时间周期，日志量最大20GB-->
+      <totalSizeCap>20GB</totalSizeCap>
+      <!-- 最大保存时间：10天-->
+      <maxHistory>10</maxHistory>
     </rollingPolicy>
+
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <!--每个日志文件最大100MB-->
+      <maxFileSize>100MB</maxFileSize>
+    </triggeringPolicy>
   </appender>
 
 
@@ -72,7 +79,13 @@
       <fileNamePattern>error.%d{yyyy-MM-dd}.log</fileNamePattern>
       <!-- 最大保存时间：30天-->
       <maxHistory>30</maxHistory>
+      <!--30天的时间周期，日志量最大20GB-->
+      <totalSizeCap>20GB</totalSizeCap>
     </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <!--每个日志文件最大100MB-->
+      <maxFileSize>100MB</maxFileSize>
+    </triggeringPolicy>
   </appender>
 
   <!-- 基于dubug处理日志：具体控制台或者文件对日志级别的处理还要看所在appender配置的filter，如果没有配置filter，则使用root配置 -->
