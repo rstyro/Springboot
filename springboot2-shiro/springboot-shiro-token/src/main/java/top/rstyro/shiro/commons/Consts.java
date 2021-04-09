@@ -11,7 +11,7 @@ public class Consts {
     /**
      * 存入redis的token 前缀
      */
-    public static final String REDIS_TOKEN_KEY_PREFIX = "login_token_";
+    public static final String REDIS_TOKEN_KEY_PREFIX = "login_token:";
     /**
      * milliseconds：毫秒
      */

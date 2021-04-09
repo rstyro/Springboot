@@ -36,7 +36,6 @@ public class IndexController {
 //	private ITestService testService;
 
 	@Autowired
-	@Qualifier("redisTemplate")
 	private RedisTemplate<String,Object> redisTemplate;
 
 	@RequestMapping("/")
@@ -63,7 +62,8 @@ public class IndexController {
 			// shiro 认证
 			subject.login(new CustomerToken(token));
 			// session ID 当作token
-			currentUser.setToken(subject.getSession().getId().toString());
+			String sessionId = subject.getSession().getId().toString();
+			currentUser.setToken(sessionId);
 			// 暴力直接返回用户信息，真实肯定不是这样干的，密码啥的各种敏感信息是不返回的
 			return Result.ok(currentUser);
 		}catch (UnknownAccountException e){

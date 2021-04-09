@@ -39,11 +39,13 @@ public class ShiroRedisCache<K,V> implements Cache<K,V> {
 
     @Override
     public V remove(K k) throws CacheException {
+        System.out.println("remove");
         return (V) getRedisTemplate().opsForHash().delete(this.cacheName,k.toString());
     }
 
     @Override
     public void clear() throws CacheException {
+        System.out.println("clear");
         getRedisTemplate().delete(this.cacheName);
     }
 

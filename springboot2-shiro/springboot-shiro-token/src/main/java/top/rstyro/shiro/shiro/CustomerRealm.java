@@ -99,15 +99,9 @@ public class CustomerRealm extends AuthorizingRealm {
      */
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         String loginToken = (String) token.getPrincipal();
-        System.out.println("loginToken="+loginToken);
         RedisTemplate redisTemplate=  ApplicationContextUtils.getBean("redisTemplate",RedisTemplate.class);
-        User user = (User) redisTemplate.opsForValue().get(Consts.REDIS_TOKEN_KEY_PREFIX+loginToken);
-        System.out.println("user="+user);
-//        IUserService userService=  ApplicationContextUtils.getBean(IUserService.class);
-//        User user = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getToken, loginToken));
-//        Subject subject = SecurityUtils.getSubject();
-//        System.out.println("suject="+subject);
-//        System.out.println("suject.session="+subject.getSession());
+        Object obj = redisTemplate.opsForValue().get(Consts.REDIS_TOKEN_KEY_PREFIX + loginToken);
+        User user = JSON.parseObject(obj.toString(),User.class);
         if(user!=null){
             // 密码放入数据库的密码 和 登陆传上来的比较（shiro帮我们处理）
             SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(user,token.getCredentials(),this.getName());
