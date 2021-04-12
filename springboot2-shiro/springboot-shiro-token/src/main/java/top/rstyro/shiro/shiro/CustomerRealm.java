@@ -101,13 +101,15 @@ public class CustomerRealm extends AuthorizingRealm {
         String loginToken = (String) token.getPrincipal();
         RedisTemplate redisTemplate=  ApplicationContextUtils.getBean("redisTemplate",RedisTemplate.class);
         Object obj = redisTemplate.opsForValue().get(Consts.REDIS_TOKEN_KEY_PREFIX + loginToken);
-        User user = JSON.parseObject(obj.toString(),User.class);
-        if(user!=null){
-            // 密码放入数据库的密码 和 登陆传上来的比较（shiro帮我们处理）
-            SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(user,token.getCredentials(),this.getName());
-            //清除当前主体旧的会话，相当于你在新电脑上登录系统，把你之前在旧电脑上登录的会话挤下去
-            ShiroUtils.deleteCache(user.getUsername(),true);
-            return simpleAuthenticationInfo;
+        if(!ObjectUtils.isEmpty(obj)){
+            User user = JSON.parseObject(obj.toString(),User.class);
+            if(user!=null){
+                // 密码放入数据库的密码 和 登陆传上来的比较（shiro帮我们处理）
+                SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(user,token.getCredentials(),this.getName());
+                //清除当前主体旧的会话，相当于你在新电脑上登录系统，把你之前在旧电脑上登录的会话挤下去
+                ShiroUtils.deleteCache(user.getUsername(),true);
+                return simpleAuthenticationInfo;
+            }
         }
         // 返回null 则会报 UnknownAccountException 异常
         return null;

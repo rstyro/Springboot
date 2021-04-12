@@ -92,7 +92,7 @@ public class ShiroConfig {
 
         //禁用cookie
         sessionManager.setSessionIdCookieEnabled(false);
-        //禁用会话id重写
+        //禁用会话id重写,取消登陆跳转URL后面的jsessionid参数
         sessionManager.setSessionIdUrlRewritingEnabled(false);
 
         // session监听
