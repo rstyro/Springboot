@@ -1,5 +1,6 @@
 package top.rstyro.shiro.shiro.uitls;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.LogoutAware;
@@ -7,12 +8,18 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
+import top.rstyro.shiro.commons.Consts;
+import top.rstyro.shiro.shiro.CustomerRealm;
 import top.rstyro.shiro.shiro.session.RedisSessionDAO;
 import top.rstyro.shiro.sys.entity.User;
 import top.rstyro.shiro.utils.ApplicationContextUtils;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class ShiroUtils {
 
@@ -38,11 +45,11 @@ public class ShiroUtils {
     }
 
     /**
-     * 获取当前用户信息
+     * 获取当前用户token
      * @return
      */
-    public static User getUserInfo() {
-        return (User) SecurityUtils.getSubject().getPrincipal();
+    public static String getToken() {
+        return (String) SecurityUtils.getSubject().getPrincipal();
     }
 
     /**
@@ -82,5 +89,50 @@ public class ShiroUtils {
         DefaultWebSecurityManager securityManager = (DefaultWebSecurityManager) SecurityUtils.getSecurityManager();
         Authenticator authc = securityManager.getAuthenticator();
         ((LogoutAware) authc).onLogout((SimplePrincipalCollection) attribute);
+    }
+
+    public static User getUser(){
+        return getUser(getToken());
+    }
+
+    public static User getUser(String token){
+        Object obj = getRedisTemplate().opsForValue().get(Consts.REDIS_TOKEN_KEY_PREFIX + token);
+        if(!ObjectUtils.isEmpty(obj)) {
+            User user = JSON.parseObject(obj.toString(), User.class);
+            return user;
+        }
+        return null;
+    }
+
+    public static void setLoginInfo(User currentUser,String newToken){
+        RedisTemplate<String, Object> redisTemplate = getRedisTemplate();
+        // 保存用户token,为了清除用户之前的旧数据
+        redisTemplate.opsForHash().put(Consts.REDIS_USER_TOKEN,currentUser.getId().toString(),newToken);
+        // 保存token到数据库，可以不用保存数据库直接redis也可以,这个token只是为了 realm校验用，而不返回给前端
+        redisTemplate.opsForValue().set(Consts.REDIS_TOKEN_KEY_PREFIX+newToken,currentUser, Consts.TOKEN_TIME_OUT, TimeUnit.MILLISECONDS);
+    }
+
+    public static String getOldUserToken(Long userId){
+        RedisTemplate<String, Object> redisTemplate = getRedisTemplate();
+        Object o = redisTemplate.opsForHash().get(Consts.REDIS_USER_TOKEN, userId.toString());
+        return ObjectUtils.isEmpty(o)?null:o.toString();
+    }
+
+    public static final String DEFAULT_AUTHORIZATION_CACHE_SUFFIX = ".authorizationCache";
+
+    public static void clearOldUserInfo(String oldUserToken){
+        if(!StringUtils.isEmpty(oldUserToken)){
+            RedisTemplate<String, Object> redisTemplate = getRedisTemplate();
+            System.out.println("oldToken1="+oldUserToken);
+            System.out.println("oldToken2="+getSession().getAttribute(Consts.OLD_TOKEN));
+            redisTemplate.delete(Consts.REDIS_TOKEN_KEY_PREFIX+oldUserToken);
+            redisTemplate.opsForHash().delete(Consts.SHIRO_AUTHENTICATION_CACHE,oldUserToken);
+            redisTemplate.opsForHash().delete(RedisSessionDAO.KEY_PREFIX,oldUserToken);
+            redisTemplate.opsForHash().delete(CustomerRealm.class.getName()+DEFAULT_AUTHORIZATION_CACHE_SUFFIX,oldUserToken);
+        }
+    }
+
+    public static RedisTemplate<String,Object> getRedisTemplate(){
+        return (RedisTemplate) ApplicationContextUtils.getBean("redisTemplate",RedisTemplate.class);
     }
 }

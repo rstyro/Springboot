@@ -24,7 +24,7 @@ public class RedisSessionDAO extends CachingSessionDAO {
     @Qualifier("shiroRedisTemplate")
     private RedisTemplate redisTemplate;
 
-    private static final String KEY_PREFIX = "shiro_redis_session";
+    public static final String KEY_PREFIX = "shiro_redis_session";
 
     private Logger log = LoggerFactory.getLogger(RedisSessionDAO.class);
 

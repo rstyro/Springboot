@@ -9,8 +9,8 @@
     LEFT JOIN
     menu b
     on
-    a.menu_id=b.id and a.deleted=0 and b.deleted=0
-    where a.role_id in
+    a.menu_id=b.id and  b.deleted=0
+    where a.deleted=0 and a.role_id in
         <foreach collection="roleIds" open="(" close=")" separator="," item="item">
             #{item}
         </foreach>
