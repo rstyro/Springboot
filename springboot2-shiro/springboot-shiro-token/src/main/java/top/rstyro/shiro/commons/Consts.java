@@ -15,8 +15,11 @@ public class Consts {
     /**
      * 保存用户token  redis hash:大key，小key是userId
      */
-    public static final String REDIS_USER_TOKEN = "user_token";
-    public static final String OLD_TOKEN = "old_token";
+    public static final String REDIS_USER_TOKEN = "login_user_token";
+    /**
+     * 旧的登录token,为了清除旧数据
+     */
+    public static final String OLD_TOKEN = "old_login_token";
     /**
      * milliseconds：毫秒
      */

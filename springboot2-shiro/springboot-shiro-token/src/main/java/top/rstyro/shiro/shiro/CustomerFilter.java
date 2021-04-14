@@ -70,14 +70,16 @@ public class CustomerFilter extends AuthenticatingFilter {
         }
         // 如果有，进行token验证
         try {
-            SecurityUtils.getSubject().login(new CustomerToken(token));
+            // 这个就不登录了，如果走到这步说明session过期了，或者redis的session被删除了，直接报错算了，让他重新登录
+//            SecurityUtils.getSubject().login(new CustomerToken(token));
         } catch (AuthenticationException e) {
             log.error(e.getMessage(),e);
             writeOut(servletResponse, Result.error("Token过期"));
             return false;
         }
-
-        return true;
+        // 无效的session直接返回，不执行登录了
+        writeOut(servletResponse, Result.error("Token过期"));
+        return false;
     }
 
     @Override

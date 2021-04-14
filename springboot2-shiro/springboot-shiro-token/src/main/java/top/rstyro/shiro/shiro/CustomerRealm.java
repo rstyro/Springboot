@@ -123,7 +123,7 @@ public class CustomerRealm extends AuthorizingRealm {
     @Override
     public boolean isPermitted(PrincipalCollection principals, String permission) {
         User user = ShiroUtils.getUser((String) principals.getPrimaryPrincipal());
-        return "admin".equals(user.getUsername()) || super.isPermitted(principals, permission);
+        return (!ObjectUtils.isEmpty(user) && "admin".equals(user.getUsername())) || super.isPermitted(principals, permission);
     }
 
     /**
@@ -132,7 +132,7 @@ public class CustomerRealm extends AuthorizingRealm {
     @Override
     public boolean hasRole(PrincipalCollection principals, String roleIdentifier) {
         User user =ShiroUtils.getUser((String) principals.getPrimaryPrincipal());
-        return "admin".equals(user.getUsername()) || super.hasRole(principals, roleIdentifier);
+        return (!ObjectUtils.isEmpty(user) && "admin".equals(user.getUsername())) || super.hasRole(principals, roleIdentifier);
     }
 
     /**
