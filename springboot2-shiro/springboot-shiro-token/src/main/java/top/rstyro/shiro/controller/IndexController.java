@@ -10,7 +10,6 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +20,6 @@ import top.rstyro.shiro.shiro.CustomerToken;
 import top.rstyro.shiro.shiro.uitls.ShiroUtils;
 import top.rstyro.shiro.sys.entity.User;
 import top.rstyro.shiro.sys.service.IUserService;
-import top.rstyro.shiro.utils.IdUtils;
-
-import java.io.Serializable;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -62,17 +57,14 @@ public class IndexController {
 			Session session = subject.getSession();
 			String newToken = session.getId().toString();
 			String oldUserToken = ShiroUtils.getOldUserToken(currentUser.getId());
-			System.out.println("oldTOken="+oldUserToken);
-			System.out.println("newToken="+newToken);
 			session.setAttribute(Consts.OLD_TOKEN,oldUserToken);
 			ShiroUtils.setLoginInfo(currentUser,newToken);
 			// shiro 认证
 			subject.login(new CustomerToken(newToken));
 			// session ID 当作token
-			String sessionId = subject.getSession().getId().toString();
-			currentUser.setToken(sessionId);
-			// 暴力直接返回用户信息，真实肯定不是这样干的，密码啥的各种敏感信息是不返回的
-			return Result.ok(currentUser);
+//			currentUser.setToken(newToken);
+			// 直接返回用户信息，真实肯定不是这样干的，密码啥的各种敏感信息是不返回的
+			return Result.ok().putData("user",currentUser).putData("token",newToken);
 		}catch (UnknownAccountException e){
 			log.error("用户不存在",e);
 		}catch (IncorrectCredentialsException e){

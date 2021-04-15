@@ -37,7 +37,6 @@ public class ShiroConfig {
         map.put("/logout", "anon");//anno 不拦截
         map.put("/**", "token"); // 其他请求通过 自定义的过滤器token
 
-//        shiroFilterFactoryBean.setLoginUrl("/login");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
         return shiroFilterFactoryBean;
     }
@@ -51,7 +50,6 @@ public class ShiroConfig {
         //给安全管理器设置
         defaultWebSecurityManager.setRealm(customerRealm);
         defaultWebSecurityManager.setSessionManager(sessionManager());
-
         return defaultWebSecurityManager;
     }
 
@@ -63,14 +61,16 @@ public class ShiroConfig {
     @Bean
     public CustomerRealm customerRealm() {
         CustomerRealm customerRealm = new CustomerRealm();
-        customerRealm.setCacheManager(new ShiroRedisCacheManager());
-        customerRealm.setCachingEnabled(true);
         // 认证缓存
         customerRealm.setAuthenticationCachingEnabled(true);
         customerRealm.setAuthenticationCacheName(Consts.SHIRO_AUTHENTICATION_CACHE);
         // 授权缓存
         customerRealm.setAuthorizationCachingEnabled(true);
         customerRealm.setAuthorizationCacheName(Consts.SHIRO_AUTHORIZATION_CACHE);
+
+        customerRealm.setCachingEnabled(true);
+        customerRealm.setCacheManager(new ShiroRedisCacheManager());
+
         return customerRealm;
     }
 

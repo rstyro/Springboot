@@ -107,9 +107,8 @@ public class CustomerRealm extends AuthorizingRealm {
         User user = ShiroUtils.getUser(loginToken);
         if (user != null) {
             SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(token.getPrincipal(), token.getCredentials(), this.getName());
-            //清除当前主体旧的会话，相当于你在新电脑上登录系统，把你之前在旧电脑上登录的会话挤下去
-//                ShiroUtils.deleteCache(user.getUsername(),true);
             String oldToken = (String) SecurityUtils.getSubject().getSession().getAttribute(Consts.OLD_TOKEN);
+            //清除当前主体旧的会话，相当于你在新电脑上登录系统，把你之前在旧电脑上登录的会话挤下去
             ShiroUtils.clearOldUserInfo(oldToken);
             return simpleAuthenticationInfo;
         }
@@ -135,33 +134,4 @@ public class CustomerRealm extends AuthorizingRealm {
         return (!ObjectUtils.isEmpty(user) && "admin".equals(user.getUsername())) || super.hasRole(principals, roleIdentifier);
     }
 
-    /**
-     * 清空已经放入缓存的认证信息。
-     */
-    @Override
-    protected void clearCache(PrincipalCollection principals) {
-        System.out.println("自定义 realm clearCache");
-        System.out.println("principals=" + JSON.toJSONString(principals));
-        System.out.println("principals=" + JSON.toJSONString(principals));
-        ShiroRedisCache cache = (ShiroRedisCache) this.getCacheManager().getCache(Consts.SHIRO_AUTHENTICATION_CACHE);
-        System.out.println("cache=" + JSON.toJSONString(cache.size()));
-        System.out.println("cache=" + JSON.toJSONString(cache.keys()));
-        System.out.println("cache=" + JSON.toJSONString(cache.values()));
-        User user = (User) principals.getPrimaryPrincipal();
-        // 清除旧的认证缓存
-        if (cache != null && cache.size() > 0) {
-            Iterator<String> iterator = cache.keys().iterator();
-            while (iterator.hasNext()) {
-                String key = iterator.next();
-                if (user.getToken().equals(key)) {
-                    cache.remove(key);
-                    break;
-                }
-            }
-        }
-
-        this.getCacheManager().getCache(Consts.SHIRO_AUTHORIZATION_CACHE).remove(principals);
-
-        super.clearCache(principals);
-    }
 }

@@ -36,6 +36,7 @@ public class ShiroRedisCache<K,V> implements Cache<K,V> {
     @Override
     public V put(K k, V v) throws CacheException {
         getRedisTemplate().opsForHash().put(this.cacheName,k.toString(),v);
+        // 缓存设置过期时间
         getRedisTemplate().expire(this.cacheName, Consts.TOKEN_TIME_OUT, TimeUnit.MILLISECONDS);
         return null;
     }

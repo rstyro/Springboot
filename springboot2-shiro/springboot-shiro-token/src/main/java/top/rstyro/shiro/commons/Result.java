@@ -1,5 +1,7 @@
 package top.rstyro.shiro.commons;
 
+import org.springframework.util.ObjectUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,6 +66,21 @@ public class Result extends HashMap<String, Object> {
 		super.put(key, value);
 		return this;
 	}
+
+	public Result putData(String key, Object value) {
+		Object data = getData();
+		if(ObjectUtils.isEmpty(data)){
+			data=new HashMap<String,Object>();
+			this.put(DATA,data);
+		}
+		if(data instanceof HashMap){
+			((HashMap) data).put(key,value);
+		}else {
+			throw new RuntimeException("不是map类型，无法添加其他属性");
+		}
+		return this;
+	}
+
 	public Object getData(){
 		return this.get(DATA);
 	}
