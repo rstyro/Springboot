@@ -1,0 +1,16 @@
+#server.port=80
+
+# 单点 redis，默认lettuce 连接池
+spring:
+  redis:
+    password:
+    database: 0
+    port: 6379
+    host: 127.0.0.1
+    lettuce:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1ms
+    timeout: 10000ms

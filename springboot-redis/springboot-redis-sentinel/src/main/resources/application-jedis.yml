@@ -1,0 +1,16 @@
+#server.port=80
+
+# redis db number default number is 0
+spring:
+  redis:
+    timeout: 10000ms
+    sentinel:
+      nodes: 192.168.31.245:26379,192.168.31.245:26380,192.168.31.245:26381
+      master: rstyroMaster
+      password: rstyro6868
+    jedis:
+      pool:
+        max-active: 256
+        max-wait: 30000
+        max-idle: 64
+        min-idle: 32

@@ -1,0 +1,15 @@
+server:
+  port: 8088
+spring:
+  redis:
+    password: rstyro
+    lettuce:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1ms
+    timeout: 10000ms
+    cluster:
+      nodes: 192.168.31.169:7000,192.168.31.169:7001,192.168.31.169:7002,192.168.31.169:7003,192.168.31.169:7004,192.168.31.169:7005
+

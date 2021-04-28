@@ -1,0 +1,14 @@
+# 哨兵redis,默认lettuce 连接池
+spring:
+  redis:
+    lettuce:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1ms
+    timeout: 10000ms
+    sentinel:
+      nodes: 192.168.31.245:26379,192.168.31.245:26380,192.168.31.245:26381
+      master: rstyroMaster
+      password: rstyro6868
