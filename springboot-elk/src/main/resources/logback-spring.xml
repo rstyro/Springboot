@@ -2,8 +2,10 @@
 <configuration>
 
   <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-    <destination>192.168.31.168:4567</destination>
-    <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder" />
+    <destination>192.168.31.169:4567</destination>
+    <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder" >
+      <customFields>{"app-name":"spring-demo-log"}</customFields>
+    </encoder>
   </appender>
 
   <property name="LOG_HOME" value="/opt/logs" />
