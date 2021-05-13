@@ -23,4 +23,6 @@
 - [SpringBoot2-Redisson](https://rstyro.github.io/blog/2019/06/25/SpringBoot2%E4%B8%8ERedisson%E7%A2%B0%E6%92%9E/) *SpringBoot 与Redisson 整合之分布式锁与发布订阅*
 - [SpringBoot2-RedisCacheManager](https://rstyro.github.io/blog/2019/04/16/SpringBoot%E4%B8%8ERedisCacheManager%E6%95%B4%E5%90%88/) *SpringBoot 与RedisCacheManager整合*
 - [Springboot2-api-encrypt](https://rstyro.github.io/blog/2020/10/22/Springboot2接口加解密全过程详解(含前端代码)/) *SpringBoot接口RSA+AES加解密(含前端代码)*
+- [springboot-elk](https://rstyro.gitee.io/blog/2021/04/28/Centos7搭建ELK与Springboot整合/) *SpringBoot与ELK整合demo)*
+
 - ...持续更新
