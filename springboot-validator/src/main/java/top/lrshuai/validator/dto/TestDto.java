@@ -3,6 +3,7 @@ package top.lrshuai.validator.dto;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import top.lrshuai.validator.annotation.MatchValue;
+import top.lrshuai.validator.enums.SexEnum;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -17,7 +18,8 @@ public class TestDto {
     @NotBlank(message = "name不能为空")
     private String name;
 
-    @MatchValue(values = {"男","女"},message = "sex参数无效")
+//    @MatchValue(values = {"男","女"},message = "sex参数无效")
+    @MatchValue(enums = SexEnum.class,message = "sex参数无效")
     private String sex;
 
     @NotNull(message = "age 不能为空")
