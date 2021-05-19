@@ -1,20 +1,15 @@
 package top.lrshuai.validator.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import top.lrshuai.validator.commons.Result;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.xml.bind.ValidationException;
+import javax.validation.ValidationException;
 
 /**
  * 描述：全局统一异常处理
@@ -24,27 +19,42 @@ import javax.xml.bind.ValidationException;
 @ControllerAdvice
 public class GlobalExceptionHandlerAdvice {
 
+
     /**
-     * 验证异常
+     * 参数验证异常
      */
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
-    @ResponseBody
     public Result handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        BindingResult bindingResult = e.getBindingResult();
-        String errorMsg = "";
-        for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            errorMsg += fieldError.getDefaultMessage() + ";";
-        }
+        String errorMsg =  e.getBindingResult().getFieldError().getDefaultMessage();
         if (!StringUtils.isEmpty(errorMsg)) {
-            log.error("MethodArgumentNotValidException：" + errorMsg);
             return Result.error(errorMsg);
         }
-        return Result.error();
+        log.error(e.getMessage(),e);
+        return Result.error(e.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public Result handlerException(Exception e) {
+    /**
+     * 参数验证异常
+     */
+    @ExceptionHandler(value = {ValidationException.class})
+    public Result constraintViolationException(ValidationException e) {
+        if(e instanceof ConstraintViolationException){
+            ConstraintViolationException err = (ConstraintViolationException) e;
+            ConstraintViolation<?> constraintViolation = err.getConstraintViolations().stream().findFirst().get();
+            String messageTemplate = constraintViolation.getMessageTemplate();
+            if(!StringUtils.isEmpty(messageTemplate)){
+                return Result.error(messageTemplate);
+            }
+        }
+        log.error(e.getMessage(),e);
+        return Result.error(e.getMessage());
+    }
+
+    /**
+     * 默认异常
+     */
+    @ExceptionHandler(value = Exception.class)
+    public Result defaultException(Exception e) {
         log.error("系统异常:" + e.getMessage(), e);
         return Result.error();
     }
