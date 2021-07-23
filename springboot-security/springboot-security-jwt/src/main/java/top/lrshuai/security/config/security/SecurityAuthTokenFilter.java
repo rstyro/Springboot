@@ -39,7 +39,9 @@ public class SecurityAuthTokenFilter extends BasicAuthenticationFilter {
                 if (!JwtUtils.isExpiration(token)){
                     // 将用户信息存入 authentication，方便后续校验
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userInfo.getUsername(), null,userInfo.getAuthorities());
+                    // SecurityContextHolder 权限验证上下文
                     SecurityContext context = SecurityContextHolder.getContext();
+                    // 指示用户已通过身份验证
                     context.setAuthentication(authentication);
                     System.out.println("authorite="+authentication.getAuthorities().toString());
                 }
