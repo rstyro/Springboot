@@ -18,7 +18,7 @@
         <elasticsearch.version>7.17.5</elasticsearch.version>
         <lombok.version>1.18.2</lombok.version>
         <hutool.version>5.8.2</hutool.version>
-        <fastjson.version>1.2.73</fastjson.version>
+        <fastjson.version>2.0.22</fastjson.version>
     </properties>
     <dependencies>
         <dependency>
@@ -48,10 +48,16 @@
             <artifactId>hutool-crypto</artifactId>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba</groupId>-->
+<!--            <artifactId>fastjson</artifactId>-->
+<!--            <version>${fastjson.version}</version>-->
+<!--        </dependency>-->
+
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>${fastjson.version}</version>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>2.0.22</version>
         </dependency>
 
         <!-- 繁体简体互转 -->

@@ -1,7 +1,7 @@
 package top.rstyro.poetry.es.index;
 
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson2.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import lombok.Data;
 import lombok.experimental.Accessors;

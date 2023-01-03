@@ -25,4 +25,5 @@
 - [Springboot2-api-encrypt](https://rstyro.github.io/blog/2020/10/22/Springboot2接口加解密全过程详解(含前端代码)/) *SpringBoot接口RSA+AES加解密(含前端代码)*
 - [springboot-elk](https://rstyro.gitee.io/blog/2021/04/28/Centos7搭建ELK与Springboot整合/) *SpringBoot与ELK整合demo)*
 - [springboot-sqlite](https://github.com/rstyro/spring-boot/tree/master/springboot-sqlite/) *SpringBoot与SQLite整合demo)*
+- [springboot-es](https://github.com/rstyro/spring-boot/tree/master/springboot-es/) *SpringBoot与ES 7版本以上整合demo)*
 - ...持续更新
