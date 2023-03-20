@@ -1,0 +1,33 @@
+server:
+  port: 8888
+
+
+# db1 数据源
+spring:
+  data:
+    neo4j:
+      database: neo4j
+  neo4j:
+    authentication:
+      username: neo4j
+      password: root
+    uri: bolt://localhost:7687
+
+# db2 数据源
+db2:
+  spring:
+    data:
+      neo4j:
+        database: neo4j
+    neo4j:
+      authentication:
+        username: neo4j
+        password: neo4j
+      uri: bolt://10.168.2.128:7687
+
+
+# 健康检查配置打开，访问 http://localhost:{server.port}/actuator/health
+management:
+  endpoint:
+    health:
+      show-details: always
