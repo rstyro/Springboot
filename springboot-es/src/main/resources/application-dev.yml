@@ -1,0 +1,11 @@
+
+
+# elasticsearch
+elasticsearch:
+  enable: true
+  hosts: 127.0.0.1:9200
+  username: elastic
+  password: rstyro
+  connectTimeOut: 60000
+  socketTimeOut: 10000
+  connectionRequestTime: 60000

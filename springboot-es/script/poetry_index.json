@@ -1,0 +1,87 @@
+{
+  "settings": {
+    "number_of_shards": 3,
+    "number_of_replicas": 0,
+  },
+  "mappings": {
+    "properties": {
+      "section": {
+        "type": "keyword"
+      },
+      "tags": {
+        "type": "keyword"
+      },
+      "dynasty": {
+        "type": "keyword"
+      },
+      "type": {
+        "type": "keyword"
+      },
+      "translations": {
+        "type": "text",
+        "analyzer": "ik_max_word",
+        "search_analyzer": "ik_smart"
+      },
+      "author": {
+        "type": "text",
+        "analyzer": "ik_max_word",
+        "search_analyzer": "ik_smart",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          },
+          "suggest": {
+            "type": "completion",
+            "analyzer": "ik_smart",
+            "preserve_separators": true,
+            "preserve_position_increments": true,
+            "max_input_length": 10
+          }
+        }
+      },
+      "title": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword"
+          },
+          "suggest": {
+            "type": "completion",
+            "analyzer": "ik_smart",
+            "preserve_separators": true,
+            "preserve_position_increments": true,
+            "max_input_length": 50
+          }
+        },
+        "analyzer": "ik_max_word",
+        "search_analyzer": "ik_smart"
+      },
+      "content": {
+        "type": "text",
+        "analyzer": "ik_max_word",
+        "search_analyzer": "ik_smart",
+        "term_vector": "with_positions",
+        "fields": {
+          "suggest": {
+            "type": "completion",
+            "analyzer": "ik_smart",
+            "preserve_separators": true,
+            "preserve_position_increments": true,
+            "max_input_length": 50
+          }
+        }
+      },
+      "view_count": {
+        "type": "integer"
+      },
+      "update_time": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss || yyyy-MM-dd || epoch_millis"
+      },
+      "create_time": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss || yyyy-MM-dd || epoch_millis"
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+server:
+  port: 8080
+
+spring:
+  security:
+    user:
+      name: rstyro
+      password: rstyro

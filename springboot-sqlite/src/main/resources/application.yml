@@ -1,0 +1,18 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      force: true
+      enabled: true
+      charset: UTF-8
+spring:
+  application:
+    name: springboot-sqlite-demo
+  profiles:
+    active: dev
+  thymeleaf:
+    mode: LEGACYHTML5
+    encoding: UTF-8
+    cache: false
+    servlet:
+      content-type: text/html

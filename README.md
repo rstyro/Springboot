@@ -1,6 +1,3 @@
-### 兄 Dei，有用能不能给个Star呀
-### 兄 Dei，有用能不能给个Star呀
-### 兄 Dei，有用能不能给个Star呀
 ### 项目目录介绍
 - [hello word](https://rstyro.github.io/blog/2017/07/25/Spring%20Boot%20%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%88%9D%E8%AF%86%E4%B9%8B%E5%85%A5%E9%97%A8%E7%AF%87/)    *最简单的版本*
 - [Springboot-web](https://rstyro.github.io/blog/2017/07/27/Spring%20Boot%20(%E4%BA%8C)%EF%BC%9AWeb%20%E5%BC%80%E5%8F%91%E7%AF%87/)     *web 版本的*
@@ -23,4 +20,16 @@
 - [SpringBoot2-Redisson](https://rstyro.github.io/blog/2019/06/25/SpringBoot2%E4%B8%8ERedisson%E7%A2%B0%E6%92%9E/) *SpringBoot 与Redisson 整合之分布式锁与发布订阅*
 - [SpringBoot2-RedisCacheManager](https://rstyro.github.io/blog/2019/04/16/SpringBoot%E4%B8%8ERedisCacheManager%E6%95%B4%E5%90%88/) *SpringBoot 与RedisCacheManager整合*
 - [Springboot2-api-encrypt](https://rstyro.github.io/blog/2020/10/22/Springboot2接口加解密全过程详解(含前端代码)/) *SpringBoot接口RSA+AES加解密(含前端代码)*
+- [springboot-elk](https://rstyro.gitee.io/blog/2021/04/28/Centos7搭建ELK与Springboot整合/) *SpringBoot与ELK整合demo)*
+- [springboot-sqlite](https://github.com/rstyro/spring-boot/tree/master/springboot-sqlite/) *SpringBoot与SQLite整合demo)*
+- [springboot-es](https://github.com/rstyro/spring-boot/tree/master/springboot-es/) *SpringBoot与ES 7版本以上整合demo)*
+- [springboot-neo4j-multiple-sdn](https://github.com/rstyro/spring-boot/tree/master/springboot-neo4j-multiple-sdn/) *springboot与neo4j多数据源Demo*
 - ...持续更新
+
+
+
+
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=rstyro/Springboot&type=Date)](https://star-history.com/#rstyro/Springboot&Date)

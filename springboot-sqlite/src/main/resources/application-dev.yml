@@ -1,0 +1,57 @@
+mybatis-plus:
+  mapper-locations:
+    - classpath:mapper/*/*.xml
+    - classpath*:mapper/*/*/*.xml
+  # 配置slq打印日志
+  configuration:
+    #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    jdbc-type-for-null: null
+  type-aliases-package: top.lrshuai.sqlite.*.entity
+  #配置逻辑删除
+  global-config:
+    db-config:
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+      id-type: auto
+    banner: false
+
+
+spring:
+  datasource:
+#    type: org.sqlite.SQLiteDataSource
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:D:/home/sqlite3/test.db
+    # 放在resource 启动不报错，但是会报错： 缺失数据库或找不到表，所有还是把db文件放到项目外面
+#    url: jdbc:sqlite:resources:test.db
+    username:
+    password:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initialSize: 5
+      minIdle: 5
+      maxActive: 30
+      max-wait: 6000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      #validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        #login-username: admin
+        #login-password: admin
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
