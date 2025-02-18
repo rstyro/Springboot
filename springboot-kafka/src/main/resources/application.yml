@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: spring-kafka
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # acks=0：生产者在消息发送后不会等待任何来自服务器的响应。这意味着生产者可以在消息可能还没有被保存的情况下继续发送更多的消息，从而提供最低的延迟。
+      # acks=1（默认值）：生产者会等待直到领导者副本（Leader Replica）成功接收并保存了消息后才会认为消息是成功写入的。这种模式提供了一个中等级别的数据可靠性和延迟。如果领导者副本在确认消息前失败了，那么尽管消息已经发送到了服务器，但仍然有丢失的风险。
+      # acks=-1 或 all：生产者会等待直到所有的副本都成功接收消息后才会继续发送下一条消息。这提供了最高级别的数据可靠性，但也带来了最高的延迟。
+      # acks=all时，只要配置合适的min.insync.replicas配置，它定义了一个分区必须要有的最小同步副本数。如果同步副本的数量低于这个值，那么生产者在acks=all的设置下发送消息会失败。反之大于等于min.insync.replicas配置的数即可返回应答成功。
+      acks: all
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: my-Group
+      # earliest 当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，从头开始消费
+      # latest 当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，消费新产生的该分区下的数据
+      # none topic各分区都存在已提交的offset时，从offset后开始消费；只要有一个分区不存在已提交的offset，则抛出异常
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      properties:
+        # 消费会话超时
+        session:
+          timeout:
+            ms: 10000
+            # 消费请求超时
+        request:
+          timeout:
+            ms: 12000
+
+
+
