@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions
+    xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_LeaveProcess" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.23.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.21.0">
+    <bpmn:process id="LeaveProcess" name="请假审批流程" isExecutable="true" camunda:historyTimeToLive="P30D">
+        <bpmn:startEvent id="StartEvent_1" name="请假开始">
+            <bpmn:outgoing>Flow_StartToApply</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:userTask id="UserTask_ApplyLeave" name="提交请假申请" camunda:assignee="${applicant}">
+            <bpmn:extensionElements>
+                <camunda:formData>
+                    <camunda:formField id="leaveType" label="请假类型" type="string" defaultValue="年假">
+                        <camunda:value id="annual">年假</camunda:value>
+                        <camunda:value id="sick">病假</camunda:value>
+                        <camunda:value id="personal">事假</camunda:value>
+                    </camunda:formField>
+                    <camunda:formField id="startDate" label="开始时间" type="string">
+                        <camunda:properties>
+                            <camunda:property id="datePattern" value="yyyy-MM-dd HH:mm:ss" />
+                        </camunda:properties>
+                    </camunda:formField>
+                    <camunda:formField id="endDate" label="结束时间" type="string">
+                        <camunda:properties>
+                            <camunda:property id="datePattern" value="yyyy-MM-dd HH:mm:ss" />
+                        </camunda:properties>
+                    </camunda:formField>
+                    <camunda:formField id="leaveDays" label="请假天数" type="long" />
+                    <camunda:formField id="reason" label="请假事由" type="string" />
+                </camunda:formData>
+            </bpmn:extensionElements>
+            <bpmn:incoming>Flow_StartToApply</bpmn:incoming>
+            <bpmn:outgoing>Flow_ApplyToGateway</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:exclusiveGateway id="Gateway_ApprovalPath" name="审批路径判断">
+            <bpmn:incoming>Flow_ApplyToGateway</bpmn:incoming>
+            <bpmn:outgoing>Flow_GatewayToManager</bpmn:outgoing>
+            <bpmn:outgoing>Flow_GatewayToDirector</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:userTask id="UserTask_ManagerApprove" name="部门经理审批" camunda:assignee="${departmentManager}">
+            <bpmn:extensionElements>
+                <camunda:formData>
+                    <camunda:formField id="managerApproved" label="审批结果" type="boolean">
+                        <camunda:value id="true">同意</camunda:value>
+                        <camunda:value id="false">拒绝</camunda:value>
+                    </camunda:formField>
+                    <camunda:formField id="managerComment" label="审批意见" type="string" />
+                </camunda:formData>
+            </bpmn:extensionElements>
+            <bpmn:incoming>Flow_GatewayToManager</bpmn:incoming>
+            <bpmn:outgoing>Flow_ManagerToEnd</bpmn:outgoing>
+            <bpmn:outgoing>Flow_ManagerReject</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:userTask id="UserTask_DirectorApprove" name="总监审批" camunda:assignee="${director}">
+            <bpmn:extensionElements>
+                <camunda:formData>
+                    <camunda:formField id="directorApproved" label="审批结果" type="boolean">
+                        <camunda:value id="true">同意</camunda:value>
+                        <camunda:value id="false">拒绝</camunda:value>
+                    </camunda:formField>
+                    <camunda:formField id="directorComment" label="审批意见" type="string" />
+                </camunda:formData>
+            </bpmn:extensionElements>
+            <bpmn:incoming>Flow_GatewayToDirector</bpmn:incoming>
+            <bpmn:outgoing>Flow_DirectorToEnd</bpmn:outgoing>
+            <bpmn:outgoing>Flow_DirectorReject</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:serviceTask id="ServiceTask_HRRecord" name="人事备案" camunda:class="top.lrshuai.camunda.service.HRRecordService">
+            <bpmn:incoming>Flow_ManagerToEnd</bpmn:incoming>
+            <bpmn:incoming>Flow_DirectorToEnd</bpmn:incoming>
+            <bpmn:outgoing>Flow_HRToEnd</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:serviceTask id="ServiceTask_NotifyApplicant" name="通知申请人" camunda:class="top.lrshuai.camunda.service.NotificationService">
+            <bpmn:incoming>Flow_ManagerReject</bpmn:incoming>
+            <bpmn:incoming>Flow_DirectorReject</bpmn:incoming>
+            <bpmn:outgoing>Flow_NotifyToEnd</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:endEvent id="EndEvent_Approved" name="审批通过">
+            <bpmn:incoming>Flow_HRToEnd</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:endEvent id="EndEvent_Rejected" name="审批拒绝">
+            <bpmn:incoming>Flow_NotifyToEnd</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Flow_StartToApply" sourceRef="StartEvent_1" targetRef="UserTask_ApplyLeave" />
+        <bpmn:sequenceFlow id="Flow_ApplyToGateway" sourceRef="UserTask_ApplyLeave" targetRef="Gateway_ApprovalPath" />
+        <bpmn:sequenceFlow id="Flow_GatewayToManager" sourceRef="Gateway_ApprovalPath" targetRef="UserTask_ManagerApprove">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${leaveDays &lt;= 3}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_GatewayToDirector" sourceRef="Gateway_ApprovalPath" targetRef="UserTask_DirectorApprove">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${leaveDays &gt; 3}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_ManagerToEnd" sourceRef="UserTask_ManagerApprove" targetRef="ServiceTask_HRRecord">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${managerApproved == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_ManagerReject" sourceRef="UserTask_ManagerApprove" targetRef="ServiceTask_NotifyApplicant">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${managerApproved == false}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_DirectorToEnd" sourceRef="UserTask_DirectorApprove" targetRef="ServiceTask_HRRecord">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${directorApproved == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_DirectorReject" sourceRef="UserTask_DirectorApprove" targetRef="ServiceTask_NotifyApplicant">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${directorApproved == false}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_HRToEnd" sourceRef="ServiceTask_HRRecord" targetRef="EndEvent_Approved" />
+        <bpmn:sequenceFlow id="Flow_NotifyToEnd" sourceRef="ServiceTask_NotifyApplicant" targetRef="EndEvent_Rejected" />
+    </bpmn:process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+        <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="LeaveProcess">
+            <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+                <dc:Bounds x="173" y="152" width="36" height="36" />
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds x="169" y="188" width="44" height="14" />
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="UserTask_ApplyLeave_di" bpmnElement="UserTask_ApplyLeave">
+                <dc:Bounds x="260" y="130" width="100" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Gateway_ApprovalPath_di" bpmnElement="Gateway_ApprovalPath" isMarkerVisible="true">
+                <dc:Bounds x="410" y="145" width="50" height="50" />
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds x="402" y="195" width="67" height="14" />
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="UserTask_ManagerApprove_di" bpmnElement="UserTask_ManagerApprove">
+                <dc:Bounds x="510" y="80" width="100" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="UserTask_DirectorApprove_di" bpmnElement="UserTask_DirectorApprove">
+                <dc:Bounds x="510" y="180" width="100" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="EndEvent_Approved_di" bpmnElement="EndEvent_Approved">
+                <dc:Bounds x="1042" y="82" width="36" height="36" />
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds x="1038" y="118" width="45" height="14" />
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="EndEvent_Rejected_di" bpmnElement="EndEvent_Rejected">
+                <dc:Bounds x="1052" y="322" width="36" height="36" />
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds x="1047" y="298" width="45" height="14" />
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="ServiceTask_NotifyApplicant_di" bpmnElement="ServiceTask_NotifyApplicant">
+                <dc:Bounds x="690" y="310" width="100" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="ServiceTask_HRRecord_di" bpmnElement="ServiceTask_HRRecord">
+                <dc:Bounds x="750" y="80" width="100" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge id="Flow_StartToApply_di" bpmnElement="Flow_StartToApply">
+                <di:waypoint x="209" y="170" />
+                <di:waypoint x="260" y="170" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_ApplyToGateway_di" bpmnElement="Flow_ApplyToGateway">
+                <di:waypoint x="360" y="170" />
+                <di:waypoint x="410" y="170" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_GatewayToManager_di" bpmnElement="Flow_GatewayToManager">
+                <di:waypoint x="435" y="145" />
+                <di:waypoint x="435" y="120" />
+                <di:waypoint x="510" y="120" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_GatewayToDirector_di" bpmnElement="Flow_GatewayToDirector">
+                <di:waypoint x="435" y="195" />
+                <di:waypoint x="435" y="220" />
+                <di:waypoint x="510" y="220" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_ManagerToEnd_di" bpmnElement="Flow_ManagerToEnd">
+                <di:waypoint x="610" y="120" />
+                <di:waypoint x="750" y="120" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_ManagerReject_di" bpmnElement="Flow_ManagerReject">
+                <di:waypoint x="560" y="160" />
+                <di:waypoint x="560" y="350" />
+                <di:waypoint x="690" y="350" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_DirectorToEnd_di" bpmnElement="Flow_DirectorToEnd">
+                <di:waypoint x="610" y="220" />
+                <di:waypoint x="710" y="220" />
+                <di:waypoint x="710" y="120" />
+                <di:waypoint x="750" y="120" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_DirectorReject_di" bpmnElement="Flow_DirectorReject">
+                <di:waypoint x="610" y="240" />
+                <di:waypoint x="650" y="240" />
+                <di:waypoint x="650" y="320" />
+                <di:waypoint x="690" y="320" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_HRToEnd_di" bpmnElement="Flow_HRToEnd">
+                <di:waypoint x="850" y="120" />
+                <di:waypoint x="941" y="120" />
+                <di:waypoint x="941" y="100" />
+                <di:waypoint x="1042" y="100" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_NotifyToEnd_di" bpmnElement="Flow_NotifyToEnd">
+                <di:waypoint x="790" y="350" />
+                <di:waypoint x="921" y="350" />
+                <di:waypoint x="921" y="340" />
+                <di:waypoint x="1052" y="340" />
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</bpmn:definitions>
