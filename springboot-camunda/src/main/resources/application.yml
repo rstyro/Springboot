@@ -1,0 +1,44 @@
+server:
+  port: 8081
+
+camunda.bpm:
+  database:
+    type: mysql
+    schema-update: true  # 首次启动设置为true，自动创建表
+  admin-user:
+    id: admin  #用户名
+    password: admin  #密码
+    firstName: rstyro-
+  filter:
+    create: All tasks
+  # 自动部署resources/下的BPMN文件
+  auto-deployment-enabled: true
+  # 历史级别: none, activity, audit, full
+  history-level: full
+  generic-properties:
+    properties:
+      historyTimeToLive: P30D  # 设置全局默认历史记录生存时间为30天
+      enforceHistoryTimeToLive: false  # 可选：禁用强制TTL检查
+  # 作业执行配置
+  job-execution:
+    enabled: true
+    core-pool-size: 3
+    max-pool-size: 10
+
+# mysql连接信息
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.mysql.cj.jdbc.MysqlDataSource
+    url: jdbc:mysql://localhost:3306/camunda
+    username: root
+    password: root
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+# 日志配置
+logging:
+  level:
+    org.camunda: INFO
+    org.springframework.web: INFO

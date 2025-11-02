@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: springboot-mqtt
+
+
+# mqtt配置
+mqtt:
+  max-retries: 10
+  clients:
+    client1:
+      brokerUrl: tcp://broker.emqx.io:1883
+      clientId: client1Id
+      username: test
+      password: test
+      topics:
+        - topic: /device/control
+          qos: 1
+        - topic: /test/rstyro
+          qos: 1
+        - topic: /room/502
+          qos: 1
+        - topic: test/topic
+          qos: 1
+#    client2:
+#      brokerUrl: tcp://broker.emqx.io:1883
+#      clientId: client2Id
+#      username: admin
+#      password: admin
+#      qosLevel: 1
+#      topics:
+#        - topic: /device/test
+#          qos: 1

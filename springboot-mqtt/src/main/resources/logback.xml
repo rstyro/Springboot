@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!-- 日志名称前缀 -->
+    <property name="LOG_NAME" value="springboot-mqtt"/>
+    <!-- 最大保存时间：30天-->
+    <property name="KEEP_DAY" value="30"/>
+    <!-- 日志输出格式 -->
+    <property name="LOG_PATTERN" value="%red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}) - [%method,%line] - %msg%n"/>
+
+    <!-- 控制台打印日志的相关配置 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- 日志格式 -->
+        <encoder>
+<!--            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] - %m%n</pattern>-->
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <!-- 控制台不过滤日志级别 -->
+    </appender>
+
+    <!-- 文件保存日志的相关配置 -->
+    <appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 保存日志文件的路径 -->
+        <file>logs/${LOG_NAME}_info.log</file>
+        <!-- 日志格式 -->
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <!-- 日志级别过滤器 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- 过滤的级别 -->
+            <level>INFO</level>
+            <!-- 匹配时的操作：接收（记录） -->
+            <onMatch>ACCEPT</onMatch>
+            <!-- 不匹配时的操作：拒绝（不记录） -->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!-- 循环政策：基于时间创建日志文件 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 日志文件名格式 -->
+            <fileNamePattern>logs/${LOG_NAME}_info.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 最大保存时间：30天-->
+            <maxHistory>${KEEP_DAY}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+
+    <appender name="file_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/${LOG_NAME}_error.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/${LOG_NAME}_error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>${KEEP_DAY}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="file_warn" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/${LOG_NAME}_warn.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/${LOG_NAME}_warn.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>${KEEP_DAY}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+
+    <!-- 包含logstash日志配置,不使用ELK注释上即可 -->
+    <!-- <include resource="logback-logstash.xml" /> -->
+
+    <!-- skywalking日志收集 -->
+<!--    <include resource="logback-skylog.xml" />-->
+
+    <!--myibatis log configure
+    <logger name="org.apache.http" level="INFO" />
+    <logger name="com.apache.ibatis" level="TRACE" />
+    <logger name="java.sql.Connection" level="DEBUG" />
+    <logger name="java.sql.Statement" level="DEBUG" />
+    <logger name="java.sql.PreparedStatement" level="DEBUG" />
+    <logger name="com.lrs.core" level="DEBUG" />
+  -->
+
+    <!-- 包日志级别控制  -->
+    <logger name="top.lrshuai" level="INFO" />
+    <logger name="org.springframework" level="WARN" />
+    <!-- 基于dubug处理日志：具体控制台或者文件对日志级别的处理还要看所在appender配置的filter，如果没有配置filter，则使用root配置 -->
+    <root level="INFO">
+        <appender-ref ref="console" />
+        <appender-ref ref="file_info" />
+        <appender-ref ref="file_warn" />
+        <appender-ref ref="file_error" />
+    </root>
+
+    <root level="WARN">
+        <appender-ref ref="file_warn" />
+        <appender-ref ref="file_error" />
+    </root>
+
+    <root level="ERROR">
+        <appender-ref ref="file_error" />
+    </root>
+
+</configuration>

@@ -24,6 +24,7 @@
 - [springboot-sqlite](https://github.com/rstyro/spring-boot/tree/master/springboot-sqlite/) *SpringBoot与SQLite整合demo)*
 - [springboot-es](https://github.com/rstyro/spring-boot/tree/master/springboot-es/) *SpringBoot与ES 7版本以上整合demo)*
 - [springboot-neo4j-multiple-sdn](https://github.com/rstyro/spring-boot/tree/master/springboot-neo4j-multiple-sdn/) *springboot与neo4j多数据源Demo*
+- [springboot-mqtt](https://github.com/rstyro/spring-boot/tree/master/springboot-mqtt/) *springboot集成mqtt支持多客户端*
 - ...持续更新
 
 
