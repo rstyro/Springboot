@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <camunda.version>7.21.0</camunda.version>
+        <camunda.version>7.24.0</camunda.version>
         <mysql.version>8.3.0</mysql.version>
         <lombok.version>1.18.30</lombok.version>
     </properties>
