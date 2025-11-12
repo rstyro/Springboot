@@ -1,0 +1,22 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: springboot-shedlock
+  data:
+    redis:
+      host: localhost
+      password: abcsee2see
+      port: 6379
+
+# 定时任务线程池大小，默认是1，多个任务会串行(顺序执行)
+  task:
+    scheduling:
+      pool:
+        size: 5
+      thread-name-prefix: scheduling-
+logging:
+  level:
+    root: info
+    net.javacrumbs.shedlock: debug
