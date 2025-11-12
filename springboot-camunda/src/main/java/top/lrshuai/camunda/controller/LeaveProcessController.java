@@ -50,7 +50,7 @@ public class LeaveProcessController {
             variables.put("leaveDays", application.getLeaveDays());
             variables.put("reason", application.getReason());
             // 设置审批人（实际项目中可以从用户服务获取）
-            variables.put("departmentManager", "manager_" + getDepartment(application.getApplicant()));
+            variables.put("departmentManager", getDepartment(application.getApplicant()));
             variables.put("director", "director_company");
 
             var instance = runtimeService.startProcessInstanceByKey("LeaveProcess", variables);
@@ -165,6 +165,6 @@ public class LeaveProcessController {
     private String getDepartment(String userId) {
         // 模拟根据用户ID获取部门信息
         // 实际项目中应该调用用户服务
-        return "tech"; // 返回部门代码
+        return "manager_tech"; // 返回部门代码
     }
 }
