@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.lrshuai.limit.common.ApiException;
 import top.lrshuai.limit.common.ApiResultEnum;
-import top.lrshuai.limit.common.Result;
+import top.lrshuai.limit.common.R;
 
 import java.io.IOException;
 
@@ -22,45 +22,45 @@ public class GlobalExceptionHandler {
 	private Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 	@ExceptionHandler(NullPointerException.class)
-	public Result NullPointer(NullPointerException ex){
+	public R NullPointer(NullPointerException ex){
 	   logger.error(ex.getMessage(),ex);
-	   return Result.error(ApiResultEnum.ERROR_NULL);
+	   return R.fail(ApiResultEnum.ERROR_NULL);
     }
 
     @ExceptionHandler(ClassCastException.class)
-    public Result ClassCastException(ClassCastException ex){
+    public R ClassCastException(ClassCastException ex){
         logger.error(ex.getMessage(),ex);
-        return Result.error(ApiResultEnum.ERROR_CLASS_CAST);
+        return R.fail(ApiResultEnum.ERROR_CLASS_CAST);
     }
 
     @ExceptionHandler(IOException.class)
-    public Result IOException(IOException ex){
+    public R IOException(IOException ex){
         logger.error(ex.getMessage(),ex);
-        return Result.error(ApiResultEnum.ERROR_IO);
+        return R.fail(ApiResultEnum.ERROR_IO);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public Result HttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex){
+    public R HttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex){
         logger.error(ex.getMessage(),ex);
-        return Result.error(ApiResultEnum.ERROR_MOTHODNOTSUPPORT);
+        return R.fail(ApiResultEnum.ERROR_MONTH_NOT_SUPPORT);
     }
 
     @ExceptionHandler(ApiException.class)
-    public Result ApiException(ApiException ex) {
+    public R ApiException(ApiException ex) {
         logger.error(ex.getMessage(),ex);
-        return Result.error(ex.getStatus(),ex.getMessage());
+        return R.fail(ex.getStatus(),ex.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public Result RuntimeException(RuntimeException ex){
+    public R RuntimeException(RuntimeException ex){
         logger.error(ex.getMessage(),ex);
-        return Result.error(ApiResultEnum.ERROR_RUNTION);
+        return R.fail(ApiResultEnum.ERROR_RUNTIME);
     }
 
     @ExceptionHandler(Exception.class)
-    public Result exception(Exception ex){
+    public R exception(Exception ex){
         logger.error(ex.getMessage(),ex);
-        return Result.error(ApiResultEnum.ERROR);
+        return R.fail(ApiResultEnum.ERROR);
     }
 
 }

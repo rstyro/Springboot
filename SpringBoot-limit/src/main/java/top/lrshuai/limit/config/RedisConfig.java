@@ -3,22 +3,18 @@ package top.lrshuai.limit.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CachingConfigurerSupport;
-import org.springframework.cache.interceptor.KeyGenerator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import javax.annotation.Resource;
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * 
@@ -27,49 +23,30 @@ import java.util.Set;
  *
  */
 @Configuration
-//@EnableCaching // 开启缓存支持
-public class RedisConfig extends CachingConfigurerSupport {
-    @Resource
-    private LettuceConnectionFactory lettuceConnectionFactory;
+public class RedisConfig{
 
+    /**
+     * lua脚本
+     */
+    @Value("classpath:tokenRate.lua")
+    private org.springframework.core.io.Resource luaFile;
+
+    /**
+     * 令牌桶限流 Lua 脚本
+     */
     @Bean
-    public KeyGenerator keyGenerator() {
-        return new KeyGenerator() {
-            @Override
-            public Object generate(Object target, Method method, Object... params) {
-                StringBuffer sb = new StringBuffer();
-                sb.append(target.getClass().getName());
-                sb.append(method.getName());
-                for (Object obj : params) {
-                    sb.append(obj.toString());
-                }
-                return sb.toString();
-            }
-        };
+    public RedisScript<List> tokenBucketScript() {
+        DefaultRedisScript<List> redisScript = new DefaultRedisScript<>();
+        redisScript.setLocation(luaFile);
+        redisScript.setResultType(List.class);
+        return redisScript;
     }
-
-
-    // 缓存管理器
-    @Bean
-    public CacheManager cacheManager() {
-        RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.RedisCacheManagerBuilder
-                .fromConnectionFactory(lettuceConnectionFactory);
-        @SuppressWarnings("serial")
-        Set<String> cacheNames = new HashSet<String>() {
-            {
-                add("codeNameCache");
-            }
-        };
-        builder.initialCacheNames(cacheNames);
-        return builder.build();
-    }
-
 
     /**
      * RedisTemplate配置
      */
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         // 设置序列化
         Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<Object>(
                 Object.class);
@@ -79,7 +56,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         jackson2JsonRedisSerializer.setObjectMapper(om);
         // 配置redisTemplate
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<String, Object>();
-        redisTemplate.setConnectionFactory(lettuceConnectionFactory);
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
         RedisSerializer<?> stringSerializer = new StringRedisSerializer();
         redisTemplate.setKeySerializer(stringSerializer);// key序列化
         redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);// value序列化

@@ -4,11 +4,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.lrshuai.limit.annotation.RequestLimit;
-import top.lrshuai.limit.common.Result;
+import top.lrshuai.limit.common.R;
 
 @RestController
 @RequestMapping("/index")
-@RequestLimit(maxCount = 5,second = 1)
+@RequestLimit(maxCount = 5,second = 10)
 public class IndexController {
 
     /**
@@ -17,9 +17,9 @@ public class IndexController {
      */
     @GetMapping("/test1")
     @RequestLimit
-    public Result test(){
+    public R test(){
         //TODO ...
-        return Result.ok();
+        return R.ok();
     }
 
     /**
@@ -27,8 +27,8 @@ public class IndexController {
      * @return
      */
     @GetMapping("/test2")
-    public Result test2(){
+    public R test2(){
         //TODO ...
-        return Result.ok();
+        return R.ok();
     }
 }

@@ -32,7 +32,17 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD,ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequestLimit {
-    // 在 second 秒内，最大只能请求 maxCount 次
+    /**
+     * 资源key，用于区分不同的接口，默认为方法名
+     */
+    String key() default "";
+
+    /**
+     * 在 second 秒内，最大只能请求 maxCount 次
+     */
     int second() default 1;
+    /**
+     * 在时间窗口内允许访问的次数
+     */
     int maxCount() default 1;
 }
