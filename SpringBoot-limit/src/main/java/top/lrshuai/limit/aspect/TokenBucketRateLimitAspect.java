@@ -16,6 +16,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import top.lrshuai.limit.annotation.TokenBucketRateLimit;
 import top.lrshuai.limit.common.R;
 import top.lrshuai.limit.service.TokenBucketRateLimiter;
+import top.lrshuai.limit.util.AopUtil;
 import top.lrshuai.limit.util.IpUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,8 +29,6 @@ public class TokenBucketRateLimitAspect {
 
     @Autowired
     private TokenBucketRateLimiter rateLimiter;
-
-    private final ExpressionParser parser = new SpelExpressionParser();
 
     /**
      * 切片-方法级别
@@ -67,7 +66,7 @@ public class TokenBucketRateLimitAspect {
 
         // 如果key包含SpEL表达式，进行解析
         if (key.contains("#")) {
-            return parseSpel(key, joinPoint);
+            return AopUtil.parseSpel(key, joinPoint);
         }
 
         return key;
@@ -93,31 +92,7 @@ public class TokenBucketRateLimitAspect {
         } catch (Exception e) {
             log.debug("获取用户标识失败", e);
         }
-
         return "anonymous";
-    }
-
-    /**
-     * 解析SpEL表达式
-     */
-    private String parseSpel(String expression, ProceedingJoinPoint joinPoint) {
-        try {
-            MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-            StandardEvaluationContext context = new StandardEvaluationContext();
-
-            // 设置方法参数
-            String[] parameterNames = signature.getParameterNames();
-            Object[] args = joinPoint.getArgs();
-            for (int i = 0; i < parameterNames.length; i++) {
-                context.setVariable(parameterNames[i], args[i]);
-            }
-
-            Expression expr = parser.parseExpression(expression);
-            return expr.getValue(context, String.class);
-        } catch (Exception e) {
-            log.warn("解析SpEL表达式失败: {}", expression, e);
-            return expression;
-        }
     }
 
 }

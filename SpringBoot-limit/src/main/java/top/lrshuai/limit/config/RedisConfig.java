@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -26,10 +27,22 @@ import java.util.List;
 public class RedisConfig{
 
     /**
-     * lua脚本
+     * 令牌桶-lua脚本
      */
-    @Value("classpath:tokenRate.lua")
-    private org.springframework.core.io.Resource luaFile;
+    @Value("classpath:lua/tokenRate.lua")
+    private Resource tokenLuaFile;
+
+    /**
+     * 漏牌-lua脚本
+     */
+    @Value("classpath:lua/leakyBucket.lua")
+    private Resource leakyLuaFile;
+
+    /**
+     * 漏牌-lua脚本
+     */
+    @Value("classpath:lua/slidingWindow.lua")
+    private Resource slidingWindowLuaFile;
 
     /**
      * 令牌桶限流 Lua 脚本
@@ -37,8 +50,30 @@ public class RedisConfig{
     @Bean
     public RedisScript<List> tokenBucketScript() {
         DefaultRedisScript<List> redisScript = new DefaultRedisScript<>();
-        redisScript.setLocation(luaFile);
+        redisScript.setLocation(tokenLuaFile);
         redisScript.setResultType(List.class);
+        return redisScript;
+    }
+
+    /**
+     * 漏桶限流 Lua 脚本
+     */
+    @Bean
+    public RedisScript<Long> leakyBucketScript() {
+        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
+        redisScript.setLocation(leakyLuaFile);
+        redisScript.setResultType(Long.class);
+        return redisScript;
+    }
+
+    /**
+     * 滑动时间窗口计数器限流 Lua 脚本
+     */
+    @Bean
+    public RedisScript<Long> slidingWindowScript() {
+        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
+        redisScript.setLocation(slidingWindowLuaFile);
+        redisScript.setResultType(Long.class);
         return redisScript;
     }
 
