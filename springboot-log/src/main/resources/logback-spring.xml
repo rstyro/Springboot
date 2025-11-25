@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+  <!-- 日志名称前缀 -->
+  <property name="LOG_NAME" value="log-demo"/>
+  <!-- 最大保存时间：15天-->
+  <property name="KEEP_DAY" value="15"/>
+  <!-- 日志输出格式 -->
+  <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - [%M,%line] - %msg%n"/>
+  <property name="COLOR_PATTERN" value="%red(%d{yyyy-MM-dd HH:mm:ss.SSS}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{36}) - [%M,%line] - %msg%n"/>
+
+  <!-- 控制台打印日志的相关配置 -->
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>${COLOR_PATTERN}</pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+  </appender>
+
+  <!-- 通用文件滚动策略基础配置 -->
+  <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- 保存日志文件的路径 -->
+    <file>logs/${LOG_NAME}_info.log</file>
+    <encoder>
+      <pattern>${LOG_PATTERN}</pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+    <!-- 使用LevelFilter精确匹配INFO级别 -->
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <!-- 过滤的级别 -->
+      <level>INFO</level>
+      <!-- 匹配时的操作：接收（记录） -->
+      <onMatch>ACCEPT</onMatch>
+      <!-- 不匹配时的操作：拒绝（不记录） -->
+      <onMismatch>DENY</onMismatch>
+    </filter>
+
+    <!-- 使用SizeAndTimeBasedRollingPolicy，同时按时间和大小滚动 -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>logs/${LOG_NAME}_info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <maxHistory>${KEEP_DAY}</maxHistory>
+      <maxFileSize>50MB</maxFileSize>
+      <totalSizeCap>2GB</totalSizeCap>
+    </rollingPolicy>
+  </appender>
+
+  <!-- WARN 级别文件 -->
+  <appender name="FILE_WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>logs/${LOG_NAME}_warn.log</file>
+    <encoder>
+      <pattern>${LOG_PATTERN}</pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>WARN</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>logs/${LOG_NAME}_warn.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <maxHistory>${KEEP_DAY}</maxHistory>
+      <maxFileSize>50MB</maxFileSize>
+      <totalSizeCap>1GB</totalSizeCap>
+    </rollingPolicy>
+  </appender>
+
+  <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>logs/${LOG_NAME}_error.log</file>
+    <encoder>
+      <pattern>${LOG_PATTERN}</pattern>
+      <charset>UTF-8</charset>
+    </encoder>
+    <!-- 使用ThresholdFilter接收ERROR及以上级别 -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>ERROR</level>
+    </filter>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>logs/${LOG_NAME}_error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <maxHistory>${KEEP_DAY}</maxHistory>
+      <maxFileSize>50MB</maxFileSize>
+      <totalSizeCap>1GB</totalSizeCap>
+    </rollingPolicy>
+  </appender>
+
+  <!-- 添加异步日志Appender提升性能 -->
+  <appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
+    <discardingThreshold>0</discardingThreshold>
+    <queueSize>512</queueSize>
+    <appender-ref ref="FILE_INFO" />
+  </appender>
+
+  <appender name="ASYNC_WARN" class="ch.qos.logback.classic.AsyncAppender">
+    <discardingThreshold>0</discardingThreshold>
+    <queueSize>512</queueSize>
+    <appender-ref ref="FILE_WARN" />
+  </appender>
+
+  <appender name="ASYNC_ERROR" class="ch.qos.logback.classic.AsyncAppender">
+    <discardingThreshold>0</discardingThreshold>
+    <queueSize>512</queueSize>
+    <appender-ref ref="FILE_ERROR" />
+  </appender>
+
+  <!-- 自定义业务包 日志级别 -->
+  <logger name="top.lrshuai" level="DEBUG"/>
+  <logger name="org.springframework.web" level="INFO"/>
+
+  <!-- 多环境配置 -->
+  <springProfile name="dev,default">
+    <root level="INFO">
+      <appender-ref ref="CONSOLE" />
+      <appender-ref ref="FILE_INFO" />
+      <appender-ref ref="FILE_WARN" />
+      <appender-ref ref="FILE_ERROR" />
+    </root>
+  </springProfile>
+
+  <springProfile name="test">
+    <root level="INFO">
+      <appender-ref ref="CONSOLE" />
+      <appender-ref ref="ASYNC_INFO" />
+      <appender-ref ref="ASYNC_WARN" />
+      <appender-ref ref="ASYNC_ERROR" />
+    </root>
+  </springProfile>
+
+  <springProfile name="prod">
+    <root level="INFO">
+      <appender-ref ref="ASYNC_INFO" />
+      <appender-ref ref="ASYNC_WARN" />
+      <appender-ref ref="ASYNC_ERROR" />
+    </root>
+  </springProfile>
+</configuration>

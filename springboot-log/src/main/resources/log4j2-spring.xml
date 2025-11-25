@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="30" status="WARN">
+
+    <!-- 定义全局属性 -->
+    <Properties>
+        <!-- 日志文件存储路径 -->
+        <Property name="LOG_HOME">logs</Property>
+        <!-- 日志名称 -->
+        <Property name="APP_NAME">log4j2-demo</Property>
+
+        <!-- 日志格式定义 -->
+        <!-- 格式化输出：
+           %style 彩色输出,例如：%style{[%tid]}{red}
+           %highlight  自动彩色高亮,例如：%highlight{%-5level}
+           %d表示日期，
+           %tid：线程id,
+           %t:表示线程名 [%15.15t]对线程名称进行格式控制，固定宽度为15个字符（不足时用空格填充，超长时截断处理），语法：%[对齐][最小宽度].[最大宽度]t
+           %-5level：级别从左显示5个字符宽度
+           %logger: 表示完整的类名  %logger{36}表示 Logger名字最长36个字符，
+           %c: 表示完整的类名 {1.}只显示最后一级包名（类名本身），例：默认：top.lrs.java.MyApplication=t.l.j.MyApplication
+           %msg：日志消息，
+           %n是换行符
+           %M- 方法名
+           %L- 行号
+       -->
+        <Property name="LOG_PATTERN_CONSOLE">%d{yyyy-MM-dd HH:mm:ss.SSS} %style{[%tid]}{magenta} %highlight{%-5level} %style{[%15.15t]}{blue} %style{%-40.40c{1.}.%M(%L)}{cyan} : %msg%n</Property>
+        <Property name="LOG_PATTERN_FILE">%d{yyyy-MM-dd HH:mm:ss.SSS} [%tid]=[%thread] %-5level [%15.15t] %logger{36} : %msg%n</Property>
+        <Property name="LOG_PATTERN_JSON">{&quot;timestamp&quot;:&quot;%d{yyyy-MM-dd HH:mm:ss.SSS}&quot;,&quot;level&quot;:&quot;%level&quot;,&quot;thread&quot;:&quot;%t&quot;,&quot;logger&quot;:&quot;%logger&quot;,&quot;message&quot;:&quot;%msg&quot;,&quot;exception&quot;:&quot;%ex&quot;}</Property>
+    </Properties>
+
+    <!-- 定义Appenders -->
+    <Appenders>
+
+        <!-- 控制台输出 - 彩色日志 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN_CONSOLE}" disableAnsi="false"/>
+        </Console>
+
+        <!-- 信息级别文件输出 -->
+        <RollingFile name="InfoFile" fileName="${LOG_HOME}/${APP_NAME}-info.log"
+                     filePattern="${LOG_HOME}/${APP_NAME}-info-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN_FILE}"/>
+            <Policies>
+                <!-- 基于时间的滚动策略 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- 基于文件大小的滚动策略 -->
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- 最多保留30天的日志 -->
+            <DefaultRolloverStrategy max="30"/>
+            <Filters>
+                <!-- 只接受INFO级别及以上的日志 -->
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+        <!-- 错误级别文件输出 -->
+        <RollingFile name="ErrorFile" fileName="${LOG_HOME}/${APP_NAME}-error.log"
+                     filePattern="${LOG_HOME}/${APP_NAME}-error-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN_FILE}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="60"/>
+            <Filters>
+                <!-- 只接受ERROR级别及以上的日志 -->
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+        </RollingFile>
+
+        <!-- 异步Appender提升性能 -->
+        <Async name="AsyncInfoFile" bufferSize="1024">
+            <AppenderRef ref="InfoFile"/>
+        </Async>
+
+        <Async name="AsyncErrorFile" bufferSize="512">
+            <AppenderRef ref="ErrorFile"/>
+        </Async>
+
+        <!-- 生产环境JSON格式输出（用于日志分析系统） -->
+        <RollingFile name="JsonFile" fileName="${LOG_HOME}/${APP_NAME}.json"
+                     filePattern="${LOG_HOME}/${APP_NAME}-%d{yyyy-MM-dd}-%i.json.gz">
+            <JsonLayout complete="false" compact="false"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="200 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="15"/>
+        </RollingFile>
+
+    </Appenders>
+
+    <!-- 日志级别配置 -->
+    <Loggers>
+        <!-- Spring框架日志级别控制 -->
+        <Logger name="org.springframework" level="INFO" additivity="false"/>
+
+        <!-- 应用包日志级别 -->
+        <Logger name="com.example" level="DEBUG" additivity="false"/>
+
+        <!-- 第三方库日志级别优化 -->
+        <Logger name="org.apache" level="WARN" additivity="false"/>
+
+        <!-- 根日志配置 -->
+        <Root level="INFO">
+            <!-- 默认引用，具体环境配置在SpringProfile中覆盖 -->
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="InfoFile"/>
+            <AppenderRef ref="ErrorFile"/>
+        </Root>
+    </Loggers>
+
+    <!-- 开发环境配置 -->
+    <SpringProfile name="dev | development | local">
+        <Loggers>
+            <!-- 开发环境：详细日志级别 -->
+            <Logger name="top.lrshuai" level="TRACE"/>
+            <Logger name="com.example" level="DEBUG"/>
+            <Logger name="sun.rmi.runtime" level="INFO"/>
+            <Logger name="org.springframework" level="INFO"/>
+
+            <Root level="INFO">
+                <AppenderRef ref="DevConsole"/>
+                <AppenderRef ref="InfoFile"/>
+                <AppenderRef ref="ErrorFile"/>
+                <AppenderRef ref="JsonFile"/>
+            </Root>
+        </Loggers>
+    </SpringProfile>
+
+    <!-- 测试环境配置 -->
+    <SpringProfile name="test">
+        <Loggers>
+            <Root level="INFO">
+                <AppenderRef ref="Console"/>
+                <AppenderRef ref="AsyncInfoFile"/>
+                <AppenderRef ref="AsyncErrorFile"/>
+            </Root>
+        </Loggers>
+    </SpringProfile>
+
+    <!-- 生产环境配置 -->
+    <SpringProfile name="prod | production">
+        <Loggers>
+            <!-- 生产环境：精简日志级别，提升性能 -->
+            <Logger name="com.example" level="INFO"/>
+            <Logger name="org.springframework" level="WARN"/>
+
+            <Root level="INFO">
+                <!-- 生产环境关闭控制台输出，减少IO开销 -->
+                <AppenderRef ref="AsyncInfoFile"/>
+                <AppenderRef ref="AsyncErrorFile"/>
+                <AppenderRef ref="JsonFile"/>
+                <!-- 只在需要时开启控制台日志 -->
+                <!-- <AppenderRef ref="Console" level="INFO"/> -->
+            </Root>
+        </Loggers>
+    </SpringProfile>
+
+</Configuration>
