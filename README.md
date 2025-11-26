@@ -30,6 +30,7 @@
 - [Springboot-camunda](https://github.com/rstyro/spring-boot/tree/master/springboot-camunda/) *Springboot集成camunda工作流*
 - [Springboot-2FA](https://github.com/rstyro/Springboot/tree/master/springboot-2FA) *Springboot集成2FA二步验证*
 - [Springboot-shedlock](https://github.com/rstyro/Springboot/tree/master/springboot-shedlock) *Springboot集群部署之定时任务分布式锁*
+- [Springboot-Jasypt](https://github.com/rstyro/Springboot/tree/master/springboot-jasypt) *Springboot集成Jasypt,配置加密*
 - ...持续更新
 
 
