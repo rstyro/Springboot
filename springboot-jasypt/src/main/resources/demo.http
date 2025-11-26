@@ -1,0 +1,2 @@
+### 获取配置项的值
+GET http://localhost:8080/jasypt/getConfig?key=spring.datasource.password

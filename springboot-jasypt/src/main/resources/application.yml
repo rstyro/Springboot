@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: springboot-jasypt
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/neighbor?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Hongkong&autoReconnect=true&allowPublicKeyRetrieval=true
+    username: ENC(WaH05jih3tX0v/orZkYwbXcIIs3yD0VXAKmKn962FSxDhgtGFAj3fBN58Ye/6kZ2)
+    password: ENC(WaH05jih3tX0v/orZkYwbXcIIs3yD0VXAKmKn962FSxDhgtGFAj3fBN58Ye/6kZ2)
+    druid:
+      initialSize: 5
+      minIdle: 5
+      maxActive: 30
+      max-wait: 6000
+      # 是否缓存preparedStatement
+      pool-prepared-statements: false
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      #validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      web-stat-filter:
+        enabled: true
+        # 添加过滤规则
+        url-pattern: /*
+        # 忽略过滤的格式
+        exclusions: /druid/*,*.js,*.gif,*.jpg,*.png,*.css,*.ico
+      stat-view-servlet:
+        enabled: true
+        # 访问路径为/druid时，跳转到StatViewServlet
+        url-pattern: /druid/*
+        login-username: rstyro
+        login-password: rstyro
+        # IP白名单
+        allow: 127.0.0.1
+        # IP黑名单（共同存在时，deny优先于allow）
+        deny:
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
+
+
+
+
+# Jasypt加密配置
+jasypt:
+  encryptor:
+    # 加密密钥（非常重要！）, 优先从环境变量JASYPT_PASSWORD获取,默认：rstyro_#$%66dashun
+    password: ${JASYPT_PASSWORD:rstyro_#$%66dashun}
+    # 加密算法
+    algorithm: PBEWITHHMACSHA512ANDAES_256
+    # 随机盐
+    salt-generator-classname: org.jasypt.salt.RandomSaltGenerator
+    # 向量也是随机的
+    iv-generator-classname: org.jasypt.iv.RandomIvGenerator
+    property:
+      prefix: "ENC("   # 加密值前缀，默认也是ENC(
+      suffix: ")"   # 加密值后缀
