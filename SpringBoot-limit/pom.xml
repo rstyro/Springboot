@@ -16,6 +16,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <redisson.version>3.22.0</redisson.version>
     </properties>
 
     <dependencies>
@@ -50,6 +51,13 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>${redisson.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
