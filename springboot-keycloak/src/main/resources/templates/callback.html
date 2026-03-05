@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>登录回调</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        pre { background: #f4f4f4; padding: 10px; border: 1px solid #ddd; overflow-x: auto; }
+        .error { color: red; }
+        .log { background: #eee; border: 1px solid #ccc; padding: 10px; margin-top: 20px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; }
+        .log-header { cursor: pointer; background: #ddd; padding: 5px; margin: 0; }
+        .log-content { display: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>登录回调处理中...</h1>
+    <div id="loading">正在交换令牌，请稍候...</div>
+    <div id="result" style="display:none;">
+        <h2>令牌信息</h2>
+        <pre id="tokenResponse"></pre>
+        <h3>下一步</h3>
+        <button onclick="fetchUserInfo()">获取用户信息</button>
+        <div id="userInfo" style="display:none;">
+            <h3>用户信息</h3>
+            <pre id="userInfoResponse"></pre>
+        </div>
+    </div>
+    <div id="error" class="error" style="display:none;"></div>
+
+    <!-- 调试日志区域 -->
+    <div class="log">
+        <div class="log-header" onclick="toggleLog()">📋 调试日志 (点击展开/折叠)</div>
+        <div id="logContent" class="log-content">
+            <div id="logMessages"></div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    // 日志函数：同时输出到控制台和页面日志区域
+    function log(message, data) {
+        const timestamp = new Date().toLocaleTimeString();
+        const logLine = `[${timestamp}] ${message} ${data !== undefined ? JSON.stringify(data) : ''}`;
+        console.log(logLine);
+        const logDiv = document.getElementById('logMessages');
+        if (logDiv) {
+            const line = document.createElement('div');
+            line.textContent = logLine;
+            logDiv.appendChild(line);
+            // 自动滚动到底部
+            const logContent = document.getElementById('logContent');
+            logContent.scrollTop = logContent.scrollHeight;
+        }
+    }
+
+    function toggleLog() {
+        const content = document.getElementById('logContent');
+        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+    }
+
+    (function() {
+        // todo 注意替换 realm 和clientId
+        const CLIENT_ID="my-java-app";
+        const REALM_NAME="my-realm";
+
+        // 初始显示日志区域（可选）
+        document.getElementById('logContent').style.display = 'block';
+
+        // 从 URL 获取参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        const error = urlParams.get('error');
+        const realms = urlParams.get('realms');
+        const errorDescription = urlParams.get('error_description');
+
+        log('URL参数:', { code, state, error, realms, errorDescription });
+
+        if (error) {
+            document.getElementById('loading').style.display = 'none';
+            const errorDiv = document.getElementById('error');
+            errorDiv.style.display = 'block';
+            errorDiv.innerText = `错误: ${error} - ${errorDescription}`;
+            log('认证错误:', { error, errorDescription });
+            return;
+        }
+
+        if (!code) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').innerText = '未收到授权码';
+            log('错误: 未收到授权码');
+            return;
+        }
+
+        log('收到授权码 code:', code);
+
+        // 调用后端 /token 接口获取令牌
+
+        const tokenUrl = `/realms/${REALM_NAME}/protocol/openid-connect/token`;
+        const params = new URLSearchParams();
+        params.append('grant_type', 'authorization_code');
+        params.append('code', code);
+        // redirect_uri 必须与认证请求中的一致，这里使用当前页面完整地址（去除查询参数）
+        const currentUrl = window.location.origin + window.location.pathname;
+        log('请求令牌 window.location.origin:', window.location.origin);
+        log('请求令牌 window.location.pathname:', window.location.pathname);
+        params.append('redirect_uri', currentUrl);
+        params.append('clientId', CLIENT_ID);
+        log('请求令牌 URL:', tokenUrl);
+        log('请求参数:', Object.fromEntries(params));
+
+        fetch(tokenUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params
+        })
+            .then(response => {
+                log('令牌响应状态:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                log('令牌响应数据:', data);
+                document.getElementById('loading').style.display = 'none';
+                if (data.code === 200) { // 假设 R 返回的 code 为 200 表示成功
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('tokenResponse').textContent = JSON.stringify(data.data, null, 2);
+                    // 保存 token 到 localStorage 或内存
+                    if (data.data.access_token) {
+                        localStorage.setItem('access_token', data.data.access_token);
+                        log('access_token 已保存');
+                    }
+                    if (data.data.id_token) {
+                        localStorage.setItem('id_token', data.data.id_token);
+                    }
+                    if (data.data.refresh_token) {
+                        localStorage.setItem('refresh_token', data.data.refresh_token);
+                    }
+                } else {
+                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('error').textContent = '令牌交换失败: ' + JSON.stringify(data);
+                }
+            })
+            .catch(err => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').textContent = '请求失败: ' + err.message;
+                log('请求异常:', err.message);
+            });
+
+        // 获取用户信息函数（需携带 access_token）
+        window.fetchUserInfo = function() {
+            const userinfoUrl = `/realms/${REALM_NAME}/protocol/openid-connect/userinfo`;
+            const accessToken = localStorage.getItem('access_token');
+            log('获取用户信息, access_token:', accessToken ? '存在' : '不存在');
+            if (!accessToken) {
+                alert('未找到 access_token');
+                return;
+            }
+            fetch(userinfoUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken
+                }
+            })
+                .then(res => {
+                    log('用户信息响应状态:', res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    log('用户信息数据:', data);
+                    document.getElementById('userInfo').style.display = 'block';
+                    document.getElementById('userInfoResponse').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(err => {
+                    alert('获取用户信息失败: ' + err.message);
+                    log('获取用户信息异常:', err.message);
+                });
+        };
+    })();
+</script>
+</body>
+</html>

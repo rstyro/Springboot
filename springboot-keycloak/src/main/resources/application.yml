@@ -1,0 +1,43 @@
+server:
+  port: 8081  # Java 应用端口，和 Keycloak 客户端配置的 Redirect URIs 对应
+
+spring:
+  application:
+    name: keycloak-demo
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: my-java-app
+            client-secret: hmzuyDYTEaQOZQgdwHnc14TGiqR1GBHL
+            authorization-grant-type: authorization_code
+            # 在 OAuth2LoginAuthenticationFilter中默认拦截的/login/oauth2/code/*。所以不用处理这个重定向接口
+            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
+            scope: openid,profile,email
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/my-realm
+            user-name-attribute: preferred_username
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/my-realm
+
+
+keycloak:
+  base-uri: http://localhost:8080
+  # 多租户多客户端配置
+  realms:
+    my-realm:
+      - clientId: my-java-app
+        clientSecret: hmzuyDYTEaQOZQgdwHnc14TGiqR1GBHL
+      - clientId: test-app
+        clientSecret: aHyjJICU1MgYWz2BgKiRFBnn9ExAfkPA
+    app:
+      - client-id: app
+        client-secret: QNie8ATbJoUwaP35bkXRQNfuTQYmYf7Q
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
