@@ -21,7 +21,8 @@ public class CreateSecrteKey {
     private static final String PUBLIC_KEY = "RSAPublicKey";
     private static final String PRIVATE_KEY = "RSAPrivateKey";
 
-    private static RSA256Key rsa256Key;
+    // 使用饿汉式单例，确保密钥在类加载时就生成且只生成一次
+    private static final RSA256Key rsa256Key = createRSA256Key();
 
     //获得公钥
     public static String getPublicKey(Map<String, Object> keyMap) throws Exception {
@@ -86,21 +87,27 @@ public class CreateSecrteKey {
     }
 
     /**
+     * 创建RSA256密钥对（在类加载时调用一次）
+     * @return RSA256Key对象
+     */
+    private static RSA256Key createRSA256Key() {
+        try {
+            RSA256Key key = new RSA256Key();
+            Map<String, Object> map = initKey();
+            key.setPrivateKey((RSAPrivateKey) map.get(CreateSecrteKey.PRIVATE_KEY));
+            key.setPublicKey((RSAPublicKey) map.get(CreateSecrteKey.PUBLIC_KEY));
+            return key;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create RSA256 key pair", e);
+        }
+    }
+
+    /**
      * 获取公私钥
      * @return
      * @throws Exception
      */
-    public static synchronized RSA256Key getRSA256Key() throws Exception {
-        if(rsa256Key == null){
-            synchronized (RSA256Key.class){
-                if(rsa256Key == null) {
-                    rsa256Key = new RSA256Key();
-                    Map<String, Object> map = initKey();
-                    rsa256Key.setPrivateKey((RSAPrivateKey) map.get(CreateSecrteKey.PRIVATE_KEY));
-                    rsa256Key.setPublicKey((RSAPublicKey) map.get(CreateSecrteKey.PUBLIC_KEY));
-                }
-            }
-        }
+    public static RSA256Key getRSA256Key() throws Exception {
         return rsa256Key;
     }
 
