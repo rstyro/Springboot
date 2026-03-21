@@ -2,7 +2,9 @@ package top.lrshuai.jwt.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.lrshuai.jwt.common.ApiException;
@@ -10,16 +12,21 @@ import top.lrshuai.jwt.common.ApiResultEnum;
 import top.lrshuai.jwt.common.Result;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
-/**
- * 全局异常捕获
- * @author rstyro
- * @since 2019-03-12
- */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
 	private Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public Result handleValidationException(MethodArgumentNotValidException ex) {
+		logger.error(ex.getMessage(), ex);
+		String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+				.map(FieldError::getDefaultMessage)
+				.collect(Collectors.joining(", "));
+		return Result.error(ApiResultEnum.PARAM_ERROR.getStatus(), errorMessage);
+	}
 
 	@ExceptionHandler(NullPointerException.class)
 	public Result NullPointer(NullPointerException ex){
