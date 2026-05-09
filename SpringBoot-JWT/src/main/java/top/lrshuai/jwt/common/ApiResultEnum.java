@@ -16,9 +16,11 @@ public enum ApiResultEnum {
 
 
 
-	TOKEN_EXPIRED("10001","token 过期"),
-	SIGN_VERIFI_ERROR("10002","签名不匹配"),
-	ALGORITHM_CAN_NOT_NULL("10003","加密方式不能为空，可选 RS256、HS256"),
+	TOKEN_EXPIRED("10001","Token已过期"),
+	SIGN_VERIFI_ERROR("10002","签名验证失败"),
+	ALGORITHM_CAN_NOT_NULL("10003","加密算法不能为空，可选: HS256、RS256"),
+	ALGORITHM_NOT_SUPPORT("10004","不支持的加密算法，仅支持: HS256、RS256"),
+	PARAM_ERROR("10005","参数校验失败"),
 
 
 
