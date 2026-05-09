@@ -1,0 +1,10 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: springboot-playwright-groovy
+
+script:
+  file:
+    path: classpath:scripts/
+
